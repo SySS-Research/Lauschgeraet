@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>SySS Lauschgerät</title>
+
+    <!-- Bootstrap core CSS -->
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="/css/dashboard.css" rel="stylesheet">
+  </head>
+  <body>
+<nav class="navbar navbar-expand navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">SySS Lauschgerät</a>
+  <div class="collapse navbar-collapse" id="navbarsExample03">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item container">
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="customSwitches">
+              <label class="custom-control-label nav-link active" for="customSwitches">
+                  On/Off
+              </label>
+            </div>
+      </li>
+      <li class="nav-item dropdown disabled">
+        <a class="nav-link dropdown-toggle disabled" href="http://example.com"
+            id="dropdown03" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">Mode</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown03">
+          <a class="dropdown-item" href="#">Passive</a>
+          <a class="dropdown-item" href="#">Active</a>
+          <a class="dropdown-item" href="#">Wifi</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">
+              <span data-feather="home"></span>
+              Dashboard <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="bar-chart-2"></span>
+              Stats
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="user"></span>
+              Man in the Middle
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="plus-square"></span>
+              Extras
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </nav>
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+      </div>
+
+  <div class="container">
+        <div class="row">
+          <div class="col-6">
+            <h2>eth1</h2>
+            <pre>
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 52:54:00:4f:17:f3 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.137.26/24 brd 192.168.137.255 scope global dynamic eth0
+       valid_lft 603650sec preferred_lft 603650sec
+            </pre>
+          </div>
+          <div class="col-6">
+            <h2>eth2</h2>
+            <pre>
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 52:54:00:3a:e7:6b brd ff:ff:ff:ff:ff:ff
+    inet 192.168.11.2/24 brd 192.168.11.255 scope global dynamic eth1
+       valid_lft 2601sec preferred_lft 2601sec
+            </pre>
+          </div>
+
+        <hr>
+
+      </div>
+    </main>
+  </div>
+</div>
+<script src="/js/jquery-3.3.1.slim.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery-3.3.1.slim.min.js"><\/script>')</script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/js/Chart.min.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
