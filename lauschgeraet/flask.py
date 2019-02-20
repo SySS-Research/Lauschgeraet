@@ -1,7 +1,15 @@
-from flask import Flask, render_template, request, Response, redirect, \
-        send_from_directory
+from flask import Flask, render_template, send_from_directory
 
 app = Flask(__name__)
+
+
+def lgstate():
+    return {
+        "lgstate": {
+            "enabled": True,
+            "mode": "passive",
+        }
+    }
 
 
 def main():
@@ -21,29 +29,23 @@ def send_js(path):
 
 @app.route('/')
 def index():
-    context = {
-        "lgstate": {
-            "enabled": True,
-            "mode": "passive",
-        }
-    }
+    context = {**lgstate(), }
     return render_template("index.html", **context)
+
 
 @app.route('/stats')
 def stats():
-    context = {
-    }
+    context = {**lgstate(), }
     return render_template("stats.html", **context)
+
 
 @app.route('/mitm')
 def mitm():
-    context = {
-    }
+    context = {**lgstate(), }
     return render_template("mitm.html", **context)
+
 
 @app.route('/stats')
 def extras():
-    context = {
-    }
+    context = {**lgstate(), }
     return render_template("extras.html", **context)
-
