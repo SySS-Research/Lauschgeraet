@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>SySS Lauschgerät</title>
+
+    <!-- Bootstrap core CSS -->
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="/css/dashboard.css" rel="stylesheet">
+  </head>
+  <body>
+<nav class="navbar navbar-expand navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">SySS Lauschgerät</a>
+  {% include 'statusbar.html' %}
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link {% block dashboard_class %}{% endblock %}" href="/">
+              <span data-feather="home"></span>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% block stats_class %}{% endblock %}" href="stats">
+              <span data-feather="bar-chart-2"></span>
+              Stats
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% block mitm_class %}{% endblock %}" href="mitm">
+              <span data-feather="user"></span>
+              Man in the Middle
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% block extras_class %}{% endblock %}" href="extras">
+              <span data-feather="plus-square"></span>
+              Extras
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </nav>
+
+    {% block main %}
+    {% endblock %}
+
+  </div>
+</div>
+<script src="/js/jquery-3.3.1.slim.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery-3.3.1.slim.min.js"><\/script>')</script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/feather.min.js"></script>
+<script src="/js/Chart.min.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
