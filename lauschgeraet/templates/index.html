@@ -2,35 +2,29 @@
 
 {% block dashboard_class %}active{% endblock %}
 
+{% block title %}Dashboard{% endblock %}
+
 {% block main %}
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
+
+    <div class="row">
+      <div class="col-6">
+        <h2>eth1</h2>
+        <pre>
+{{ ipconfig["iface1"] }}
+        </pre>
       </div>
-
-  <div class="container">
-        <div class="row">
-          <div class="col-6">
-            <h2>eth1</h2>
-            <pre>
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-    link/ether 52:54:00:4f:17:f3 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.137.26/24 brd 192.168.137.255 scope global dynamic eth0
-       valid_lft 603650sec preferred_lft 603650sec
-            </pre>
-          </div>
-          <div class="col-6">
-            <h2>eth2</h2>
-            <pre>
-3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-    link/ether 52:54:00:3a:e7:6b brd ff:ff:ff:ff:ff:ff
-    inet 192.168.11.2/24 brd 192.168.11.255 scope global dynamic eth1
-       valid_lft 2601sec preferred_lft 2601sec
-            </pre>
-          </div>
-
-        <hr>
-
+      <div class="col-6">
+        <h2>eth2</h2>
+        <pre>
+{{ ipconfig["iface1"] }}
+        </pre>
       </div>
-    </main>
+    </div>
+
+    <div class="col">
+        <h2>ip route</h2>
+      <pre>
+{{ ipconfig["iproute"] }}
+      </pre>
+    </div>
 {% endblock %}

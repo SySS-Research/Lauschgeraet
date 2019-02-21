@@ -2,20 +2,28 @@
 <ul class="navbar-nav mr-auto">
   <li class="nav-item container">
     <div class="custom-control custom-switch">
-      <input type="checkbox" class="custom-control-input" id="customSwitches" {% if lgstate["enabled"] %}checked{% endif %}>
-      <label class="custom-control-label nav-link {% if lgstate["enabled"] %}active{% endif %}" for="customSwitches">
+      <input type="checkbox" class="ajax-switch custom-control-input" id="onoffswitch" {% if lgstate["enabled"] %}checked{% endif %}>
+      <label class="custom-control-label nav-link {% if lgstate["enabled"] %}active{% endif %}" for="onoffswitch">
           On/Off
       </label>
     </div>
   </li>
-  <li class="nav-item dropdown disabled">
-    <a class="nav-link dropdown-toggle disabled" href="http://example.com"
+  <li class="nav-item container {% if not lgstate["enabled"] %}disabled{% endif %}">
+    <div class="custom-control custom-switch">
+      <input type="checkbox" class="ajax-switch custom-control-input {% if not lgstate["enabled"] %}disabled{% endif %}" id="recordswitch" {% if lgstate["recording"] %}checked{% endif %}>
+      <label class="custom-control-label nav-link {% if lgstate["recording"] %}active{% endif %}" for="recordswitch">
+          Recording
+      </label>
+    </div>
+  </li>
+  <li class="nav-item dropdown {% if not lgstate["enabled"] %}disabled{% endif %}">
+    <a class="nav-link dropdown-toggle {% if not lgstate["enabled"] %}disabled{% endif %}" href="http://example.com"
         id="dropdown03" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">Mode</a>
     <div class="dropdown-menu" aria-labelledby="dropdown03">
-      <a class="dropdown-item" href="#">Passive</a>
-      <a class="dropdown-item" href="#">Active</a>
-      <a class="dropdown-item" href="#">Wifi</a>
+        <a class="dropdown-item {% if lgstate["mode"]==0 %}active{% endif %}" href="#">Passive</a>
+      <a class="dropdown-item {% if lgstate["mode"]==1 %}active{% endif %}" href="#">Active</a>
+      <a class="dropdown-item {% if lgstate["mode"]==2 %}active{% endif %}" href="#">Wifi</a>
     </div>
   </li>
 </ul>

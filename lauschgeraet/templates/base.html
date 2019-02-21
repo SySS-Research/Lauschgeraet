@@ -69,16 +69,24 @@
       </div>
     </nav>
 
-    {% block main %}
-    {% endblock %}
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <div class="container">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{% block title %}{% endblock %}</h1>
+      </div>
+      {% block main %}
+      {% endblock %}
+    </div>
+    </main>
 
   </div>
 </div>
-<script src="/js/jquery-3.3.1.slim.min.js"></script>
-<script>window.jQuery || document.write('<script src="/js/jquery-3.3.1.slim.min.js"><\/script>')</script>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery-3.3.1.min.js"><\/script>')</script>
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/feather.min.js"></script>
 <script src="/js/Chart.min.js"></script>
 <script src="js/dashboard.js"></script>
+<script src="js/lauschgeraet.js"></script>
 </body>
 </html>

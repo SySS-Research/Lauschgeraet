@@ -1,3 +1,31 @@
 {% extends "base.html" %}
 
 {% block mitm_class %}active{% endblock %}
+{% block title %}Man in the Middle{% endblock %}
+
+
+{% block main %}
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Protocol</th>
+              <th>Port</th>
+              <th>Old Destination</th>
+              <th>New Destination</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1,001</td>
+              <td>Lorem</td>
+              <td>ipsum</td>
+              <td>dolor</td>
+              <td>sit</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+{% endblock %}
