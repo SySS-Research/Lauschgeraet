@@ -5,26 +5,18 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block main %}
-
-    <div class="row">
-      <div class="col-6">
-        <h2>eth1</h2>
-        <pre>
-{{ ipconfig["iface1"] }}
-        </pre>
-      </div>
-      <div class="col-6">
-        <h2>eth2</h2>
-        <pre>
-{{ ipconfig["iface1"] }}
-        </pre>
-      </div>
-    </div>
-
     <div class="col">
-        <h2>ip route</h2>
-      <pre>
+        <h2>$ ip route</h2>
+        <pre>
 {{ ipconfig["iproute"] }}
-      </pre>
+        </pre>
+        <h2>$ ip address show eth1</h2>
+        <pre>
+{{ ipconfig["iface1"] }}
+        </pre>
+        <h2>$ ip address show eth2</h2>
+        <pre>
+{{ ipconfig["iface1"] }}
+        </pre>
     </div>
 {% endblock %}
