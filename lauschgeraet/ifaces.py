@@ -18,7 +18,7 @@ def list_devices():
     return ls('/sys/class/net/')
 
 
-def list_iptables(table, chain):
+def iptables_raw(table, chain):
     if ' ' in table or ' ' in chain:
         logging.error('Spaces not allowed table or chain name')
         return []
@@ -28,6 +28,11 @@ def list_iptables(table, chain):
     except Exception as e:
         logging.error(e)
         return []
+    return rules
+
+
+def list_iptables(table, chain):
+    rules = iptables_raw(table, chain)
     rules = rules.decode().split('\n')
     keys = []
     p = re.compile(r'\b\w+\b')

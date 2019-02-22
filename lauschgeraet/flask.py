@@ -1,5 +1,12 @@
 from flask import Flask, render_template, send_from_directory, request
-from lauschgeraet.ifaces import get_ip_config, get_ip_route
+from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw
+import logging
+from flask.logging import default_handler
+
+log = logging.getLogger(__name__)
+
+root = logging.getLogger()
+root.addHandler(default_handler)
 
 app = Flask(__name__)
 
@@ -54,7 +61,10 @@ def stats():
 
 @app.route('/mitm')
 def mitm():
-    context = {**lgstate(), }
+    context = {
+        **lgstate(),
+        "iptables_raw": iptables_raw('nat', 'PREROUTING').decode()
+    }
     return render_template("mitm.html", **context)
 
 
@@ -64,7 +74,21 @@ def extras():
     return render_template("extras.html", **context)
 
 
+@app.route('/log')
+def log():
+    with open('/var/log/lauschgeraet.log') as f:
+        log = f.read()
+    context = {**lgstate(), "log": log}
+    return render_template("log.html", **context)
+
+
 @app.route('/toggleswitch', methods=["POST"])
 def toggle_switch():
     print(request.form["name"])
+    return "OK"
+
+
+@app.route('/addrule', methods=["POST"])
+def add_rule():
+    print(request.form)
     return "OK"

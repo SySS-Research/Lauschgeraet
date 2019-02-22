@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 
 {% block mitm_class %}active{% endblock %}
-{% block title %}Man in the Middle{% endblock %}
-
+{% block title %}Man in the Middle
+<a href="#" title="What's this?" data-toggle="popover"
+data-trigger="focus" data-content="This page lets you view and modify all
+iptables rules that divert traffic. For instance, you can divert all
+traffic to port 80/tcp from the client to a local HTTP service that strips
+SSL."><span data-feather="help-circle"></span></a>
+{% endblock %}
 
 {% block main %}
     <div class="table-responsive">
-        <table class="table table-striped table-sm">
+        <table class="table table-striped table-sm" id='iptables-table'>
           <thead>
             <tr>
               <th>#</th>
@@ -14,6 +19,7 @@
               <th>Port</th>
               <th>Old Destination</th>
               <th>New Destination</th>
+              <th style='width: 40px'>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -23,9 +29,26 @@
               <td>ipsum</td>
               <td>dolor</td>
               <td>sit</td>
+              <td>
+              <a href='#' class="nav-item" title='Edit'><span data-feather="edit-2"></span></a>
+              <a href='#' class="nav-item" title='Delete'><span data-feather="trash-2"></span></a>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="#" class="nav-item float-right" id="add-iptables-rule">
+                <span data-feather="plus-circle"></span>
+            </a>
+        </div>
+    </div>
+    <div class="card mb-3">
+    <h5 class="card-header"><code>$ iptables -t nat -L PREROUTING</code></h5>
+    <div class="card-body">
+            <pre><code>{{ iptables_raw }}</code></pre>
+        </div>
+    </div>
 {% endblock %}

@@ -5,14 +5,12 @@ import logging
 from lauschgeraet.dependencies import dependencies_met
 
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-fh = logging.FileHandler('/var/log/lauschgeraet.log')
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(
+    filename='/var/log/lauschgeraet.log',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-fh.setFormatter(formatter)
-log.addHandler(fh)
+log = logging.getLogger(__name__)
 
 
 if __name__ == "__main__":
