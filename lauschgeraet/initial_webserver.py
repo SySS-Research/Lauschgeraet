@@ -1,13 +1,23 @@
 """This provides just a very simple web server in case flask is not
-installed. It gives further instructions for the installation routine."""
+installed. It gives further instructions for the installation routine.
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
+It should run under both python2 and python3.
+"""
+
 from html import escape
 from lauschgeraet.dependencies import install_dependencies, \
         dependency_check
 from subprocess import check_output
 import logging
+import sys
+
+if sys.version_info >= (3, 0):
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    from urllib.parse import urlparse, parse_qs
+else:
+    from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+    from urlparse import urlparse, parse_qs
+
 
 log = logging.getLogger(__name__)
 
@@ -46,6 +56,7 @@ details</h1>
 
 
 class RequestHandler(BaseHTTPRequestHandler):
+
     key = None
     command = []
 
@@ -90,7 +101,11 @@ type="submit">Install Dependencies</button></form><p>If you tried this
 before, check the <a href="/log">log</a>.</p> <hr> <pre> %s
 </pre></body></html>
                 ''' % (online_status(), escape(dependency_check()))
-            self.wfile.write(response.encode())
+
+            if sys.version_info >= (3, 0):
+                self.wfile.write(response.encode())
+            else:
+                self.wfile.write(response)
 
         elif method == 'POST':
             if install_dependencies():

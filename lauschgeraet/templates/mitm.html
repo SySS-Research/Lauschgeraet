@@ -22,18 +22,18 @@ SSL."><span data-feather="help-circle"></span></a>
               <th style='width: 40px'>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td>dolor</td>
-              <td>sit</td>
+          <tbody> {% for r in rules %}
+            <tr id="rule-{{r.num}}">
+              <td>{{r.num}}</td>
+              <td class='editable'>{{r.prot}}</td>
+              <td class='editable'>{{r.port}}</td>
+              <td class='editable'>{{r.destination}}</td>
+              <td class='editable'>{{r.extension}}</td>
               <td>
-              <a href='#' class="nav-item" title='Edit'><span data-feather="edit-2"></span></a>
-              <a href='#' class="nav-item" title='Delete'><span data-feather="trash-2"></span></a>
+              <a href='#' class="nav-item edit-iptables-rule" title='Edit'><span data-feather="edit-2"></span></a>
+              <a href='#' class="nav-item delete-iptables-rule" title='Delete'><span data-feather="trash-2"></span></a>
               </td>
-            </tr>
+            </tr> {% endfor %}
           </tbody>
         </table>
       </div>
@@ -46,7 +46,7 @@ SSL."><span data-feather="help-circle"></span></a>
         </div>
     </div>
     <div class="card mb-3">
-    <h5 class="card-header"><code>$ iptables -t nat -L PREROUTING</code></h5>
+    <h5 class="card-header"><code>$ iptables -t nat -L -n -v</code></h5>
     <div class="card-body">
             <pre><code>{{ iptables_raw }}</code></pre>
         </div>

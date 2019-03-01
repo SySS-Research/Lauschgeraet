@@ -65,9 +65,26 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link {% block shell_class %}{% endblock %}" href="shell">
+              <span data-feather="terminal"></span>
+              Shell
+            </a>
+          </li><li class="nav-item">
             <a class="nav-link {% block log_class %}{% endblock %}" href="log">
               <span data-feather="align-left"></span>
               Log
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% block settings_class %}{% endblock %}" href="settings">
+              <span data-feather="settings"></span>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% block help_class %}{% endblock %}" href="help">
+              <span data-feather="help-circle"></span>
+              Help
             </a>
           </li>
         </ul>
@@ -93,6 +110,7 @@
 <script src="/js/feather.min.js"></script>
 <script src="/js/Chart.min.js"></script>
 <script src="js/dashboard.js"></script>
+<script src="js/socket.io.min.js"></script>
 <script src="js/lauschgeraet.js"></script>
 </body>
 </html>

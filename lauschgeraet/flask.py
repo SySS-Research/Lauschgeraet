@@ -1,14 +1,20 @@
 from flask import Flask, render_template, send_from_directory, request
-from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw
-import logging
 from flask.logging import default_handler
+from flask_socketio import SocketIO, send, emit
+from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
+        get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
+        delete_iptables_rule
+import subprocess
+import logging
 
 log = logging.getLogger(__name__)
 
 root = logging.getLogger()
 root.addHandler(default_handler)
+logging.getLogger("watchdog.observers.inotify_buffer").setLevel(logging.INFO)
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 
 def lgstate():
@@ -22,7 +28,8 @@ def lgstate():
 
 def main():
     #  app.run(debug=True, port=args.LPORT, host=args.LHOST)
-    app.run(debug=True, port=1337)
+    #  app.run(debug=True, port=1337)
+    socketio.run(app, debug=True, port=1337)
 
 
 @app.route('/css/<path:path>')
@@ -48,6 +55,7 @@ def index():
             "iface1": get_ip_config(1),
             "iface2": get_ip_config(2),
             "iproute": get_ip_route(),
+            "ss": get_ss()
         },
     }
     return render_template("index.html", **context)
@@ -61,9 +69,11 @@ def stats():
 
 @app.route('/mitm')
 def mitm():
+    rules = list_iptables('nat', 'PREROUTING')
     context = {
         **lgstate(),
-        "iptables_raw": iptables_raw('nat', 'PREROUTING').decode()
+        "rules": rules,
+        "iptables_raw": iptables_raw('nat').decode()
     }
     return render_template("mitm.html", **context)
 
@@ -74,12 +84,30 @@ def extras():
     return render_template("extras.html", **context)
 
 
+@app.route('/shell')
+def shell():
+    context = {**lgstate(), }
+    return render_template("shell.html", **context)
+
+
 @app.route('/log')
 def log():
     with open('/var/log/lauschgeraet.log') as f:
         log = f.read()
     context = {**lgstate(), "log": log}
     return render_template("log.html", **context)
+
+
+@app.route('/settings')
+def settings():
+    context = {**lgstate(), }
+    return render_template("settings.html", **context)
+
+
+@app.route('/help')
+def help():
+    context = {**lgstate(), }
+    return render_template("help.html", **context)
 
 
 @app.route('/toggleswitch', methods=["POST"])
@@ -90,5 +118,80 @@ def toggle_switch():
 
 @app.route('/addrule', methods=["POST"])
 def add_rule():
-    print(request.form)
-    return "OK"
+    return add_iptables_rule(request.form["proto"],
+                             request.form["port"],
+                             request.form["olddest"],
+                             request.form["newdest"]
+                             )
+
+
+@app.route('/editrule', methods=["POST"])
+def edit_rule():
+    #  print(request.form)
+    return replace_iptables_rule(request.form["number"],
+                                 request.form["proto"],
+                                 request.form["port"],
+                                 request.form["olddest"],
+                                 request.form["newdest"]
+                                 )
+
+
+@app.route('/deleterule', methods=["POST"])
+def delete_rule():
+    return delete_iptables_rule(request.form["number"])
+
+
+@app.route('/stub-newrule', methods=["GET"])
+def stub_newrule():
+    context = {
+        "mode": "add" if 'add' in request.args else 'edit',
+        "rule": {
+            "number": "",
+            "prot": "",
+            "port": "",
+            "olddest": "",
+            "newdest": "",
+        }
+    }
+    return render_template("stub-newrule.html", **context)
+
+
+@app.route('/stub-editrule', methods=["GET"])
+def stub_editrule():
+    n = int(request.args["n"])
+    rules = list_iptables('nat', 'PREROUTING')
+    for r in rules:
+        if int(r["num"]) == n:
+            rule = r
+            break
+    rule = {
+        "num": rule["num"],
+        "proto": rule["prot"],
+        "port": "" if ':' not in rule["destination"] else
+        rule["destination"].split(':')[1],
+        "olddest": rule["destination"].split(':')[0],
+        "newdest": rule["extension"],
+    }
+    context = {
+        "mode": "edit",
+        "rule": rule,
+    }
+    return render_template("stub-newrule.html", **context)
+
+
+@socketio.on('joined', namespace='/shell_socket')
+def joined(message):
+    emit('status', {'msg': 'SUCCESSFULLY CONNECTED'})
+
+
+@socketio.on('comando', namespace='/shell_socket')
+def comando(comando):
+    c = comando['msg']
+    emit('message', {'msg': '$ ' + c + '\n'})
+    print(c)
+    try:
+        b = subprocess.check_output(c, shell=True).decode()
+    except Exception as err:
+        b = str(err)
+
+    emit('message', {'msg': b})

@@ -1,3 +1,9 @@
+"""This modules handles dependencies.
+
+It should run under both python2 and python3.
+"""
+
+
 from subprocess import check_output
 
 import os
@@ -9,11 +15,12 @@ def get_script_path():
 
 
 def dependencies_met():
-    return True
+    # check also for python3
+    return sys.version_info > (3, 0)
 
 
 def install_dependencies():
-    out = check_output(os.path.join(get_script_path,
+    out = check_output(os.path.join(get_script_path(),
                                     "bin",
                                     "install_deps.sh"))
     return 'SUCCESS' in out
