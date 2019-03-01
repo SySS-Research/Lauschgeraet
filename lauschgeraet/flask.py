@@ -1,6 +1,6 @@
 from flask import Flask, render_template, send_from_directory, request
 from flask.logging import default_handler
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, emit
 from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
         delete_iptables_rule
@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 root = logging.getLogger()
 root.addHandler(default_handler)
 logging.getLogger("watchdog.observers.inotify_buffer").setLevel(logging.INFO)
+logging.getLogger("socket").setLevel(logging.INFO)
 
 app = Flask(__name__)
 socketio = SocketIO(app)
