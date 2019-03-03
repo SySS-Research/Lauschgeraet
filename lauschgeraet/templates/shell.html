@@ -2,7 +2,11 @@
 
 {% block shell_class %}active{% endblock %}
 
-{% block title %}Shell{% endblock %}
+{% block title %}Shell
+<a href="#" title="What's this?" data-toggle="popover"
+data-trigger="focus" data-content="This provides a basic shell for the
+Lauschgerät. For more advanced shell usage, you should use SSH."><span
+    data-feather="help-circle"></span></a> {% endblock %}
 
 {% block main %}
 
@@ -12,6 +16,9 @@ Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace; width:
 100%;background-color: black;color:#00FF00;"></textarea>
 <input id="text" size="80" placeholder=""
 style="font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu
-Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;width:100%;"><br><br>
+Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;width:100%;">
 
+{% endblock %}
+{% block extrajs %}
+<script src='js/shell.js'></script>
 {% endblock %}

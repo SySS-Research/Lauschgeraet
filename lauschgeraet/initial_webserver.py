@@ -1,5 +1,5 @@
 """This provides just a very simple web server in case flask is not
-installed. It gives further instructions for the installation routine.
+installed. It gives further instructions for the set up.
 
 It should run under both python2 and python3.
 """
@@ -20,6 +20,49 @@ else:
 
 
 log = logging.getLogger(__name__)
+
+HTML = {
+    "index": '''
+<html><head><title>SySS Lauschger&auml;t</title></head>
+<body><h1>SySS Lauschger&auml;t</h1>
+<p>You are seeing this page because you haven't set up the Lauschger&auml;t
+yet.</p>
+<p>This device is currently: <strong>%s</strong> (<a href="/netdetails">network
+details</a>)</p>
+<p>Make sure that the device is online (has a route to the
+internet and can resolve host names), fill out this form and then press this
+button to install all dependencies automatically. The device will reboot
+afterwards. You can attach the external NICs one by one and use the network
+details linked above to figure out which is which. Reload this page after
+you attach or detach a NIC.</p>
+<p>After the device reboots, it will provide its own DHCP service and also
+create a wifi network. The WPA2 PSK is the admin password and the
+credentials for the webapp at <a
+href="http://lauschgeraet:1337">http://lauschgeraet:1337</a> is
+<code>syss:&lt;admin password&gt;</code>.</p>
+<form method="POST" action="/">
+<input type='text' name='atiface'> Name of the attacker interface (the
+built-in NIC is recommended)<br/>
+<input type='text' name='cliface'> Name of the client interface<br>
+<input type='text' name='swiface'> Name of the switch interface<br>
+<input type='text' name='wifiiface'> Name of the wifi interface<br>
+<input type='text' name='adminpass'> The admin password (equivalent to root
+access! Must be at least eight characters long)<br>
+<button type="submit">Run Setup</button>
+</form>
+<p>If you tried this before, check the <a href="/log">log</a>.</p>
+<hr> <pre> %s </pre></body></html>
+                ''',
+    "net_details": '''
+<html><head><title>SySS Lauschger&auml;t - Network
+Details</title></head><body> <h1>SySS Lauschger&auml;t - network
+details</h1>
+<h2>IP configuration (ip a)</h2> <pre>%s</pre>
+<h2>Gateway information (ip r)</h2> <pre>%s</pre>
+<h2>DNS information (cat /etc/resolv.conf)</h2> <pre>%s</pre>
+</body></html> ''',
+
+}
 
 
 def online_status():
@@ -44,14 +87,7 @@ def net_details():
     ip = check_output('/bin/ip a'.split()).decode()
     route = check_output('/bin/ip r'.split()).decode()
     dns = check_output('/bin/cat /etc/resolv.conf'.split()).decode()
-    response = '''
-<html><head><title>SySS Lauschger&auml;t - Network
-Details</title></head><body> <h1>SySS Lauschger&auml;t - network
-details</h1>
-<h2>IP configuration (ip a)</h2> <pre>%s</pre>
-<h2>Gateway information (ip r)</h2> <pre>%s</pre>
-<h2>DNS information (cat /etc/resolv.conf)</h2> <pre>%s</pre>
-</body></html> ''' % tuple(map(escape, (ip, route, dns)))
+    response = HTML["net_details"] % tuple(map(escape, (ip, route, dns)))
     return response
 
 
@@ -88,19 +124,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             elif path == '/log':
                 response = show_log()
             else:
-                response = '''
-<html><head><title>SySS Lauschger&auml;t</title></head><body> <h1>SySS
-Lauschger&auml;t</h1> <p>You are seeing this page because there are unmet
-dependencies. The output of the dependency check is shown below.</p> <p>This
-device is currently: <strong>%s</strong> (<a href="/netdetails">network
-details</a>)</p> <p>Make sure that the device is online (has a route to the
-internet and can resolve host names), then press this
-button to install all dependencies automatically. The device will reboot
-afterwards.</p> <form method="POST" action="/"> <button
-type="submit">Install Dependencies</button></form><p>If you tried this
-before, check the <a href="/log">log</a>.</p> <hr> <pre> %s
-</pre></body></html>
-                ''' % (online_status(), escape(dependency_check()))
+                response = HTML["index"] % (online_status(),
+                                            escape(dependency_check()))
 
             if sys.version_info >= (3, 0):
                 self.wfile.write(response.encode())
@@ -108,6 +133,7 @@ before, check the <a href="/log">log</a>.</p> <hr> <pre> %s
                 self.wfile.write(response)
 
         elif method == 'POST':
+            # TODO parse args, run setup
             if install_dependencies():
                 self.send_response(200)
                 self.end_headers()

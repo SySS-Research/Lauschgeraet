@@ -62,6 +62,12 @@ def index():
     return render_template("index.html", **context)
 
 
+@app.route('/setmode', methods=["POST"])
+def set_mode():
+    #  print(request.form["mode"])
+    return "OK"
+
+
 @app.route('/stats')
 def stats():
     context = {**lgstate(), }
@@ -113,7 +119,7 @@ def help():
 
 @app.route('/toggleswitch', methods=["POST"])
 def toggle_switch():
-    print(request.form["name"])
+    #  print(request.form["name"])
     return "OK"
 
 
@@ -185,14 +191,14 @@ def joined(message):
     emit('status', {'msg': 'SUCCESSFULLY CONNECTED'})
 
 
-@socketio.on('comando', namespace='/shell_socket')
-def comando(comando):
-    c = comando['msg']
-    emit('message', {'msg': '$ ' + c + '\n'})
-    print(c)
+@socketio.on('command', namespace='/shell_socket')
+def command(c):
+    c = c['msg']
+    emit('message', {'msg': '$ %s\n' % c})
     try:
-        b = subprocess.check_output(c, shell=True).decode()
+        b = subprocess.check_output(c, shell=True,
+                                    stderr=subprocess.STDOUT,).decode()
     except Exception as err:
-        b = str(err)
+        b = str(err) + '\n'
 
     emit('message', {'msg': b})

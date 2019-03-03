@@ -1,18 +1,30 @@
 $(document).ready(function() {
-  $('.ajax-switch').change(toggle_onoff);
+    $('.ajax-switch').change(toggle_onoff);
 });
 
 function toggle_onoff() {
-  $.ajax({
-    url: '/toggleswitch',
-    data: {"name":this.id},
-    type: 'POST',
-  });
+    $.ajax({
+        url: '/toggleswitch',
+        data: {"name":this.id},
+        type: 'POST',
+    });
+    if ( this.id == "onoffswitch" ) {
+        $('#lg-mode-li').toggleClass('disabled');
+        $('#lg-mode-a').toggleClass('disabled');
+    };
 }
 
 $(document).ready(function(){
     $('[data-toggle="popover"]').popover();
 });
+
+function setMode(mode) {
+    $.ajax({
+        url: '/setmode',
+        data: {"mode": mode},
+        type: 'POST',
+    });
+};
 
 function ruleAdd() {
     var proto = $('#new-rule-proto').val();
@@ -97,32 +109,3 @@ $(document).ready(function(){
         });
     });
 });
-
-
-var socket;
-$(document).ready(function(){
-    socket = io.connect('http://' + document.domain + ':' + location.port + '/shell_socket');
-    socket.on('connect', function() {
-        socket.emit('joined', {});
-    });
-    socket.on('message', function(data) {
-        $('#shell').val($('#shell').val() + data.msg);
-        $('#shell').scrollTop($('#shell')[0].scrollHeight);
-    });
-    socket.on('status', function(data) {
-        $('#shell').val($('#shell').val() + '<' + data.msg + '>\n');
-        $('#shell').scrollTop($('#shell')[0].scrollHeight);
-    });
-    $('#text').keypress(function(e) {
-        var code = e.keyCode || e.which;
-        if (code == 13) {
-            text = $('#text').val();
-            $('#text').val('');
-            socket.emit('comando', {msg: text});
-        }
-    });
-});
-function leave_room() {
-    socket.disconnect();
-    window.location.href = "http://www.google.com";
-}

@@ -16,7 +16,11 @@ def get_script_path():
 
 def dependencies_met():
     # check also for python3
-    return sys.version_info > (3, 0)
+    return sys.version_info < (3, 0)
+
+
+def dependency_check():
+    return "TODO_DEP_CHECK"
 
 
 def install_dependencies():
@@ -24,7 +28,3 @@ def install_dependencies():
                                     "bin",
                                     "install_deps.sh"))
     return 'SUCCESS' in out
-
-
-def dependency_check():
-    return "TODO_DEP_CHECK"

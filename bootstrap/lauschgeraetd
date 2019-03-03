@@ -1,0 +1,14 @@
+#!/bin/bash
+# Adrian Vollmer, SySS GmbH 2019
+# This script is run as a systemd daemon. It extracts the tarball if
+# necessary, then runs the python script
+
+LGPATH=/opt/lg/
+
+if [ ! -f "$LGPATH/lauschgerät.py" ] ; then
+    mkdir -p "$LGPATH"
+    tar -C "$LGPATH" -xf /root/lg.tar.gz && rm /root/lg.tar.gz
+fi
+
+"$LGPATH/lauschgerät.py"
+

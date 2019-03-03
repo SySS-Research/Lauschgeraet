@@ -46,8 +46,12 @@ SSL."><span data-feather="help-circle"></span></a>
         </div>
     </div>
     <div class="card mb-3">
-    <h5 class="card-header"><code>$ iptables -t nat -L -n -v</code></h5>
-    <div class="card-body">
+    <h5 class="card-header"><code>$ iptables -t nat -L -n -v</code>
+           <button class="btn btn-link" data-toggle="collapse" data-target="#iptables-raw" aria-expanded="true" aria-controls="collapseOne">
+          <span data-feather="chevrons-down"></span>
+        </button>
+    </h5>
+    <div class="card-body collapse" id='iptables-raw'>
             <pre><code>{{ iptables_raw }}</code></pre>
         </div>
     </div>
