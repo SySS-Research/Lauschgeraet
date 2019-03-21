@@ -16,7 +16,7 @@ def get_script_path():
 
 def dependencies_met():
     # check also for python3
-    return sys.version_info < (3, 0)
+    return sys.version_info > (3, 0)
 
 
 def dependency_check():
