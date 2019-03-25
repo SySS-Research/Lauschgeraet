@@ -1,0 +1,95 @@
+#!/bin/bash
+#Adrian Vollmer, SySS GmbH 2018
+#Version 1.0
+
+BD=$(dirname $0)
+. "$BD/lg-config.sh"
+STATUSFILE=$TMPDIR/status
+
+function usage {
+    echo "lg [status|set <status>]
+Valid values for <status> are:
+    passive
+    active [PREFIX]
+    wifi
+    disable
+
+PREFIX is the prefix of the client's subnet (default: 24) "
+}
+
+function get-status {
+    if [[ -f $STATUSFILE ]] ; then
+        cat $STATUSFILE
+    else
+        echo disabled
+    fi
+}
+
+case $1 in
+    'status')
+        get-status
+        ;;
+    'set')
+        case $2 in
+            passive)
+                case `get-status` in
+                    'disabled')
+                        lg-allif up && lg-brif up && echo passive > $STATUSFILE
+                        ;;
+                    'active')
+                        lg-nat down && echo passive > $STATUSFILE
+                        ;;
+                    *)
+                        echo "Status must be 'disabled' or 'active'!"
+                        exit 1
+                        ;;
+                esac
+                ;;
+            active)
+                if [[ `get-status` = passive ]] ; then
+                    lg-nat up && lg-arptab up $3 && echo active > $STATUSFILE
+                else
+                    echo "Status must be 'passive'!"
+                    exit 1
+                fi
+                ;;
+            wifi)
+                if [[ `get-status` = disabled ]] ; then
+                    lg-wifi up && echo wifi > $STATUSFILE
+                else
+                    echo "Status must be 'disabled'!"
+                    exit 1
+                fi
+                ;;
+            disable)
+                case `get-status` in
+                    active)
+                        lg-arptab down
+                        lg-nat down 
+                        lg-brif down
+                        lg-allif down 
+                        ;;
+                    passive)
+                        lg-brif down
+                        lg-allif down 
+                        ;;
+                    wifi)
+                        lg-wifi down
+                        ;;
+                esac
+                rm $STATUSFILE
+                ;;
+            *)
+                usage
+                exit 1
+                ;;
+        esac
+        ;;
+
+    *)
+        usage
+        exit 1
+        ;;
+esac
+
+exit 0

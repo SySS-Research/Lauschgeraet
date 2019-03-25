@@ -1,0 +1,34 @@
+#!/bin/bash
+
+BD=$(dirname $0)
+. "$BD/lg-config.sh"
+
+case $1 in
+    'up')
+        service dnsmasq stop
+        ip link set up dev $SWIF
+        dhclient -x $SWIF
+        sed -i 's/^port=0/#port=0/' /etc/dnsmasq.conf
+        sed -i "s/^dhcp-option=6/#dhcp-option=6/" /etc/dnsmasq.conf
+        sed -i "s/^dhcp-option=3/#dhcp-option=3/" /etc/dnsmasq.conf
+        iptables -t nat -A POSTROUTING -o $SWIF -j MASQUERADE
+        service dnsmasq start
+        ;;
+    'down')
+        service dnsmasq stop
+        iptables -t nat -D POSTROUTING -o $SWIF -j MASQUERADE
+        sed -i 's/^#port=0/port=0/' /etc/dnsmasq.conf
+        sed -i "s/^#dhcp-option=6/dhcp-option=6/" /etc/dnsmasq.conf
+        sed -i "s/^#dhcp-option=3/dhcp-option=3/" /etc/dnsmasq.conf
+        ip link set down dev $SWIF
+        service dnsmasq start
+        rm -f $TMPDIR/redirections
+        ;;
+
+    *)
+        echo 'lg-wifi [up|down]'
+        exit 1
+        ;;
+esac
+
+exit 0

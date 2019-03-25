@@ -1,0 +1,43 @@
+#!/bin/bash
+
+BD=$(dirname $0)
+. "$BD/lg-config.sh"
+BRMAC=$(cat /sys/class/net/$BRIF/address)
+GATEWAYINFO=$TMPDIR/gatewayinfo.sh
+SWMAC=$(cat /sys/class/net/$SWIF/address)
+
+case $1 in
+    'up')
+        . <(lg-getgw|tee $GATEWAYINFO)
+        ebtables -t nat -A POSTROUTING -s $SWMAC -o $SWIF \
+            -j snat --to-src $CLMAC
+        ebtables -t nat -A POSTROUTING -s $SWMAC -o $BRIF \
+            -j snat --to-src $CLMAC
+        iptables -t nat -A POSTROUTING -o $BRIF -s $ATNET,$WIFINET -p tcp \
+            -j SNAT --to $CLIP:$RANGE
+        iptables -t nat -A POSTROUTING -o $BRIF -s $ATNET,$WIFINET -p udp \
+            -j SNAT --to $CLIP:$RANGE
+        iptables -t nat -A POSTROUTING -o $BRIF -s $ATNET,$WIFINET -p icmp \
+            -j SNAT --to $CLIP
+        route add -net $GWIP netmask 255.255.255.255 dev $BRIF
+        route add default gw $GWIP
+        arp -s -i "$BRIF" "$GWIP" "$GWMAC"
+
+        ;;
+    'down')
+        arp -d "$GWIP"
+        route del default gw $GWIP
+        route del -net $GWIP netmask 255.255.255.255 dev $BRIF
+        iptables -t nat -F POSTROUTING
+        ebtables -t nat -F POSTROUTING
+        rm -f $GATEWAYINFO
+        rm -f $TMPDIR/redirections
+        ;;
+
+    *)
+        echo 'lg-nat [up|down]'
+        exit 1
+        ;;
+esac
+
+exit 0

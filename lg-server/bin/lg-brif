@@ -1,0 +1,30 @@
+#!/bin/bash
+
+BD=$(dirname $0)
+. "$BD/lg-config.sh"
+SWMAC=$(cat /sys/class/net/$SWIF/address)
+
+case $1 in
+    'up')
+        brctl addbr $BRIF
+        ifconfig $BRIF inet $BRIP up promisc
+        brctl addif $BRIF $SWIF
+        brctl addif $BRIF $CLIF
+	ip link set dev $BRIF address $SWMAC
+        iptables -t filter -A OUTPUT -s $BRIP -j DROP
+        echo 8 > /sys/class/net/$BRIF/bridge/group_fwd_mask
+        ;;
+
+    'down')
+        iptables -t filter -D OUTPUT -s $BRIP -j DROP
+        ifconfig $BRIF inet 0.0.0.0 down
+        brctl delbr $BRIF
+        ;;
+
+    *)
+        echo 'lg-brif [up|down]'
+        exit 1
+        ;;
+esac
+
+exit 0

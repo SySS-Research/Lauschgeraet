@@ -1,0 +1,60 @@
+#!/bin/bash
+
+BD=$(dirname $0)
+. "$BD/lg-config.sh"
+mkdir -p $TMPDIR
+. "$TMPDIR/gatewayinfo.sh"
+BRMAC=$(cat /sys/class/net/$BRIF/address)
+
+if [ -z $2 ] ; then
+    PREFIX=24
+else
+    PREFIX=$2
+fi
+
+# https://stackoverflow.com/questions/15429420/
+ip2int()
+{
+    local a b c d
+    { IFS=. read a b c d; } <<< $1
+    echo $(((((((a << 8) | b) << 8) | c) << 8) | d))
+}
+
+int2ip()
+{
+    local ui32=$1; shift
+    local ip n
+    for n in 1 2 3 4; do
+        ip=$((ui32 & 0xff))${ip:+.}$ip
+        ui32=$((ui32 >> 8))
+    done
+    echo $ip
+}
+
+network()
+{
+    local addr=$(ip2int $1); shift
+    local mask=$((0xffffffff << (32 -$1))); shift
+    int2ip $((addr & mask))
+}
+
+CLNET="$(network $CLIP $PREFIX)/$PREFIX"
+
+case $1 in
+    'up')
+        ip route add $CLNET dev $BRIF
+	lg-arp.py -m $CLMAC -a $CLIP -i $SWIF $CLNET | while read MAC IP; do
+	    echo "Adding $IP at $MAC"
+	    arp -s -i $BRIF $IP $MAC
+	done
+        ;;
+    'down')
+        ip route del $CLNET dev $BRIF
+        ;;
+    *)
+        echo 'lg-arptab [up [prefix=24]|down]'
+        exit 1
+        ;;
+esac
+
+exit 0
