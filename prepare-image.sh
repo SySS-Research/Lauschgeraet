@@ -7,6 +7,7 @@ set -e
 set -u
 
 IMG=
+TARBALL=/tmp/lg.tar.gz
 
 echo "Checking prerequisites..."
 
@@ -19,16 +20,16 @@ done
 
 echo "All good, preparing the image..."
 
-#TODO create tar.gz
+tar cf "$TARBALL" -C "$(dirname "$0")" lg-server
 
 guestfish -a "$IMG" -m /dev/sda2 <<_EOF_
-copy-in lauschgeraetd /usr/bin
-copy-in /tmp/lg.tar.gz /root/
-copy-in lauschgeraet.service /lib/systemd/system/
-ln-s /etc/systemd/system/lauschgeraet.service /etc/systemd/system/multi-user.target.wants/lauschgeraet.service
+copy-in $(dirname $0)/lauschgeraetd /usr/bin
+copy-in $TARBALL /root/
+copy-in $(dirname $0)/lauschgeraet.service /lib/systemd/system/
+ln-s /lib/systemd/system/lauschgeraet.service /etc/systemd/system/multi-user.target.wants/lauschgeraet.service
 _EOF_
 
-rm /tmp/lg.tar.gz
+rm -f "$TARBALL"
 
 echo "Done. Put the image on an SD card and boot your device. Then connect
 to the webapp on port 1337 and follow the instructions."

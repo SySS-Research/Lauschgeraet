@@ -65,7 +65,7 @@ def index():
 @app.route('/setmode', methods=["POST"])
 def set_mode():
     #  print(request.form["mode"])
-    return "OK"
+    return ""
 
 
 @app.route('/stats')
