@@ -4,10 +4,11 @@ It should run under both python2 and python3.
 """
 
 
-from subprocess import check_output
-
+import subprocess
 import os
 import sys
+import logging
+log = logging.getLogger(__name__)
 
 
 def get_script_path():
@@ -36,12 +37,20 @@ def dependencies_met():
     return True
 
 
-def dependency_check():
-    return "TODO_DEP_CHECK"
-
-
-def install_dependencies():
-    out = check_output(os.path.join(get_script_path(),
-                                    "bin",
-                                    "install_deps.sh"))
-    return 'SUCCESS' in out
+def lg_setup(*args):
+    try:
+        cmd = os.path.join(get_script_path(),
+                           "lg-server",
+                           "lg-setup.sh",
+                           *args,
+                           )
+        log.info("Setting up the Lauschgerät by executing '%s'" % cmd)
+        out = subprocess.check_output(cmd, shell=True)
+    except subprocess.CalledProcessError as e:
+        log.error("Setup returned with code %d: %s, %s" % (e.returncode,
+                                                           e.stdout.decode(),
+                                                           e.stderr.decode(),
+                                                           ))
+        return False
+    log.info("Setup successful: %s" % out.decode())
+    return True

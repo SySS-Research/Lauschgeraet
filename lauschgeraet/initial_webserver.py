@@ -5,8 +5,7 @@ It should run under both python2 and python3.
 """
 
 from html import escape
-from lauschgeraet.dependencies import install_dependencies, \
-        dependency_check
+from lauschgeraet.dependencies import lg_setup
 from subprocess import check_output
 import logging
 import sys
@@ -33,8 +32,9 @@ details</a>)</p>
 internet and can resolve host names), fill out this form and then press this
 button to install all dependencies automatically. The device will reboot
 afterwards. You can attach the external NICs one by one and use the network
-details linked above to figure out which is which. Reload this page after
-you attach or detach a NIC.</p>
+details linked above to figure out which is which. Reload that page after
+you attach or detach a NIC. You may want to grab a sharpie and label the
+external NICs.</p>
 <p>After the device reboots, it will provide its own DHCP service and also
 create a wifi network. The WPA2 PSK is the admin password and the
 credentials for the webapp at <a
@@ -51,16 +51,15 @@ access! Must be at least eight characters long)<br>
 <button type="submit">Run Setup</button>
 </form>
 <p>If you tried this before, check the <a href="/log">log</a>.</p>
-<hr> <pre> %s </pre></body></html>
-                ''',
+</body></html>''',
     "net_details": '''
 <html><head><title>SySS Lauschger&auml;t - Network
 Details</title></head><body> <h1>SySS Lauschger&auml;t - network
 details</h1>
 <h2>IP configuration (ip a)</h2> <pre>%s</pre>
 <h2>Gateway information (ip r)</h2> <pre>%s</pre>
-<h2>DNS information (cat /etc/resolv.conf)</h2> <pre>%s</pre>
-</body></html> ''',
+<h2>DNS information (cat /etc/resolv.conf)</h2> <pre> %s </pre>
+</body></html>''',
 
 }
 
@@ -124,23 +123,23 @@ class RequestHandler(BaseHTTPRequestHandler):
             elif path == '/log':
                 response = show_log()
             else:
-                response = HTML["index"] % (online_status(),
-                                            escape(dependency_check()))
+                response = HTML["index"] % (online_status())
 
             if sys.version_info >= (3, 0):
                 self.wfile.write(response.encode())
             else:
                 self.wfile.write(response)
 
-        elif method == 'POST':
-            # TODO parse args, run setup
-            if install_dependencies():
+        elif method == 'POST' and path == '/':
+            script_args = [args[k] for k in
+                           'atif clif swif wifif wifipw'.split()]
+            if lg_setup(*script_args):
                 self.send_response(200)
                 self.end_headers()
             else:
-                self.send_error(500, 'fail')
+                self.send_error(500, 'fail, check the logs')
         else:
-            self.send_error(500, 'fail')
+            self.send_error(404, "You can't do this")
 
 
 def run(host, port):
