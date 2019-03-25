@@ -47,10 +47,17 @@ def lg_setup(*args):
         log.info("Setting up the Lauschgerät by executing '%s'" % cmd)
         out = subprocess.check_output(cmd, shell=True)
     except subprocess.CalledProcessError as e:
-        log.error("Setup returned with code %d: %s, %s" % (e.returncode,
-                                                           e.stdout.decode(),
-                                                           e.stderr.decode(),
-                                                           ))
+        if sys.version_info > (3, 0):
+            strings = (e.returncode,
+                       e.stdout.decode(),
+                       e.stderr.decode(),
+                       )
+        else:
+            strings = (e.returncode, e.stdout, e.stderr)
+        log.error("Setup returned with code %d: %s, %s" % strings)
         return False
-    log.info("Setup successful: %s" % out.decode())
+    if sys.version_info >= (3, 0):
+        log.info("Setup successful: %s" % out.decode())
+    else:
+        log.info("Setup successful: %s" % out)
     return True

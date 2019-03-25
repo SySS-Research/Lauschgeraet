@@ -83,9 +83,14 @@ Lauschger&auml;t - log</h1>
 
 
 def net_details():
-    ip = check_output('/bin/ip a'.split()).decode()
-    route = check_output('/bin/ip r'.split()).decode()
-    dns = check_output('/bin/cat /etc/resolv.conf'.split()).decode()
+    if sys.version_info >= (3, 0):
+        ip = check_output('/bin/ip a'.split()).decode()
+        route = check_output('/bin/ip r'.split()).decode()
+        dns = check_output('/bin/cat /etc/resolv.conf'.split()).decode()
+    else:
+        ip = check_output('/bin/ip a'.split())
+        route = check_output('/bin/ip r'.split())
+        dns = check_output('/bin/cat /etc/resolv.conf'.split())
     response = HTML["net_details"] % tuple(map(escape, (ip, route, dns)))
     return response
 
