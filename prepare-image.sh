@@ -45,5 +45,6 @@ _EOF_
 
 rm -f "$TARBALL"
 
-echo "Done. Put the image on an SD card and boot your device. Then connect
-to the webapp on port 1337 and follow the instructions."
+echo "Done. Put the image on an SD card and boot your device. Plug it into a
+network where DHCP is provided and find its IP address. Then connect to the
+webapp on port 1337 and follow the instructions."
