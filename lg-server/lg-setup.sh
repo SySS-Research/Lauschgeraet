@@ -49,7 +49,9 @@ cp $rootdir/conf/hostapd /etc/default/hostapd
 cp $rootdir/conf/sshd_config /etc/ssh/sshd_config
 cp $rootdir/conf/sysctl.conf /etc/sysctl.conf
 cp $rootdir/conf/modules /etc/modules
-cp $rootdir/bin/* /usr/sbin
+for file in $rootdir/bin/* ; do
+    ln -s "$file" /usr/sbin
+done
 
 sed -i "s/%ATIF%/$ATIF/g" /etc/dnsmasq.conf /etc/network/interfaces.d/lauschgeraet.atif $rootdir/bin/lg-config.sh
 sed -i "s/%CLIF%/$CLIF/g" $rootdir/bin/lg-config.sh

@@ -15,8 +15,25 @@ def get_script_path():
 
 
 def dependencies_met():
-    # check also for python3
-    return sys.version_info > (3, 0)
+    for f in [
+        "lg",
+        "lg-allif",
+        "lg-arp.py",
+        "lg-arptab",
+        "lg-brif",
+        "lg-config.sh",
+        "lg-getgw",
+        "lg-nat",
+        "lg-redirect",
+        "lg-wifi",
+    ]:
+        if not os.path.isfile(os.path.join(os.sep, 'usr', 'sbin', f)):
+            return False
+    # check for python3
+    if sys.version_info < (3, 0):
+        return False
+    # python modules are checked implicitily via except ImportError
+    return True
 
 
 def dependency_check():
