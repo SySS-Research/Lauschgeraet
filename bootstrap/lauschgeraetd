@@ -3,12 +3,13 @@
 # This script is run as a systemd daemon. It extracts the tarball if
 # necessary, then runs the python script
 
-LGPATH=/opt/lg/
+TARBALL=/root/lg.tar.gz
+TARGET_DIR="$(dirname "$TARBALL")/lg"
 
-if [ ! -f "$LGPATH/lauschgerät.py" ] ; then
-    mkdir -p "$LGPATH"
-    tar -C "$LGPATH" -xf /root/lg.tar.gz && rm /root/lg.tar.gz
+if [ ! -f "$TARGET_DIR/lauschgerät.py" ] ; then
+    mkdir -p "$TARGET_DIR"
+    cd "$TARGET_DIR"
+    tar xfz "$TARBALL"
 fi
 
-"$LGPATH/lauschgerät.py"
-
+exec "$TARGET_DIR/lauschgerät.py"

@@ -6,8 +6,19 @@
 set -e
 set -u
 
-IMG=
+IMG="$1"
 TARBALL=/tmp/lg.tar.gz
+BOOTSTRAP_DIR="$(dirname "$0")/bootstrap"
+
+if [ -z "$IMG" ]; then
+    cat << EOF
+This script prepares a Raspbian image for the Lauschgerät.
+
+Usage:
+$0 <PATH>
+EOF
+    exit 1
+fi
 
 echo "Checking prerequisites..."
 
@@ -20,12 +31,15 @@ done
 
 echo "All good, preparing the image..."
 
-tar cf "$TARBALL" -C "$(dirname "$0")" lg-server
+tar czf "$TARBALL" -C "$(dirname "$0")" \
+    "lg-server" \
+    "lauschgeraet" \
+    "lauschgerät.py"
 
 guestfish -a "$IMG" -m /dev/sda2 <<_EOF_
-copy-in $(dirname $0)/lauschgeraetd /usr/bin
+copy-in $BOOTSTRAP_DIR/lauschgeraetd /usr/sbin
 copy-in $TARBALL /root/
-copy-in $(dirname $0)/lauschgeraet.service /lib/systemd/system/
+copy-in $BOOTSTRAP_DIR/lauschgeraet.service /lib/systemd/system/
 ln-s /lib/systemd/system/lauschgeraet.service /etc/systemd/system/multi-user.target.wants/lauschgeraet.service
 _EOF_
 
