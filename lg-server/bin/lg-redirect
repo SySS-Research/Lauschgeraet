@@ -40,12 +40,6 @@ lg-redirect [add udp|tcp <target ip> <targetport> <redirect ip> [<redirect port>
 EOF
 }
 
-# Create LG chain if it doesn't exist
-if ! iptables -t nat -L PREROUTING | grep -q ^LG 2> /dev/null ; then
-    iptables -t nat -N LG
-    iptables -t nat -A PREROUTING -j LG
-fi
-
 case $1 in
     'add')
 		if [[ $# -lt 5 ]] ; then usage ; exit 1 ; fi

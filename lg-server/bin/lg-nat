@@ -23,6 +23,8 @@ case $1 in
         route add default gw $GWIP
         arp -s -i "$BRIF" "$GWIP" "$GWMAC"
 
+        iptables -t nat -N LG
+        iptables -t nat -A PREROUTING -j LG
         ;;
     'down')
         arp -d "$GWIP"
@@ -31,7 +33,10 @@ case $1 in
         iptables -t nat -F POSTROUTING
         ebtables -t nat -F POSTROUTING
         rm -f $GATEWAYINFO
-        rm -f $TMPDIR/redirections
+
+        iptables -t nat -F LG
+        iptables -t nat -D PREROUTING -j LG
+        iptables -t nat -X LG
         ;;
 
     *)
