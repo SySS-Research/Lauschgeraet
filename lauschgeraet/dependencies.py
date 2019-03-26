@@ -10,12 +10,16 @@ import sys
 import logging
 log = logging.getLogger(__name__)
 
+TEST = os.path.exists('testing')
+
 
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 
 def dependencies_met():
+    if TEST:
+        return True
     for f in [
         "lg",
         "lg-allif",

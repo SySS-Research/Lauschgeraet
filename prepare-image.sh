@@ -31,7 +31,7 @@ done
 
 echo "All good, preparing the image..."
 
-tar czf "$TARBALL" -C "$(dirname "$0")" \
+tar czf "$TARBALL" -C "$(dirname "$0")" --exclude=testing \
     "lg-server" \
     "lauschgeraet" \
     "lauschgerät.py"
