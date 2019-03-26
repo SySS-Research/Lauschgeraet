@@ -18,18 +18,17 @@
     </div>
   </li>
   -->
-  <li id='lg-mode-li' class="nav-item dropdown {% if not lgstate["enabled"] %}disabled{% endif %}">
-    <a id='lg-mode-a' class="nav-link dropdown-toggle {% if not lgstate["enabled"] %}disabled{% endif %}"
-        href="#"
-        id="dropdown03" data-toggle="dropdown" aria-haspopup="true"
+  <li id='lg-status' class='nav-item dropdown {% if not lgstate["enabled"] %}disabled{% endif %}'>
+    <a id='lg-mode' class='nav-link dropdown-toggle {% if not lgstate["enabled"] %}disabled{% endif %}'
+        href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">Mode</a>
     <div class="dropdown-menu" aria-labelledby="dropdown03">
-        <a class="dropdown-item {% if lgstate["mode"]=="passive" %}active{%
-        endif %}" href="#" onClick="setMode('passive')">Passive</a>
-      <a class="dropdown-item {% if lgstate["mode"]=="active" %}active{%
-      endif %}" href="#" onClick="setMode('active')">Active</a>
-      <a class="dropdown-item {% if lgstate["mode"]=="wifi" %}active{% endif
-      %}" href="#" onClick="setMode('wifi')">Wifi</a>
+        <a class='dropdown-item {% if lgstate["mode"]=="passive" %}active{%
+        endif %}' href="#" onClick="setMode('passive')">Passive</a>
+      <a class='dropdown-item {% if lgstate["mode"]=="active" %}active{%
+      endif %}' href="#" onClick="setMode('active')">Active</a>
+      <a class='dropdown-item {% if lgstate["mode"]=="wifi" %}active{% endif
+      %}' href="#" onClick="setMode('wifi')">Wifi</a>
     </div>
   </li>
 </ul>

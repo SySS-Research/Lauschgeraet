@@ -4,6 +4,7 @@ from flask_socketio import SocketIO, emit
 from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
         delete_iptables_rule
+from lauschgeraet.lgiface import get_lg_status, activate_lg
 import subprocess
 import logging
 
@@ -16,15 +17,6 @@ logging.getLogger("socket").setLevel(logging.INFO)
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-
-
-def lgstate():
-    return {
-        "lgstate": {
-            "enabled": True,
-            "mode": "passive",
-        }
-    }
 
 
 def main():
@@ -51,7 +43,7 @@ def send_img(path):
 @app.route('/')
 def index():
     context = {
-        **lgstate(),
+        **get_lg_status(),
         "ipconfig": {
             "iface1": get_ip_config(1),
             "iface2": get_ip_config(2),
@@ -70,7 +62,7 @@ def set_mode():
 
 @app.route('/stats')
 def stats():
-    context = {**lgstate(), }
+    context = {**get_lg_status(), }
     return render_template("stats.html", **context)
 
 
@@ -78,7 +70,7 @@ def stats():
 def mitm():
     rules = list_iptables('nat', 'PREROUTING')
     context = {
-        **lgstate(),
+        **get_lg_status(),
         "rules": rules,
         "iptables_raw": iptables_raw('nat').decode()
     }
@@ -87,13 +79,13 @@ def mitm():
 
 @app.route('/extras')
 def extras():
-    context = {**lgstate(), }
+    context = {**get_lg_status(), }
     return render_template("extras.html", **context)
 
 
 @app.route('/shell')
 def shell():
-    context = {**lgstate(), }
+    context = {**get_lg_status(), }
     return render_template("shell.html", **context)
 
 
@@ -101,25 +93,27 @@ def shell():
 def log():
     with open('/var/log/lauschgeraet.log') as f:
         log = f.read()
-    context = {**lgstate(), "log": log}
+    context = {**get_lg_status(), "log": log}
     return render_template("log.html", **context)
 
 
 @app.route('/settings')
 def settings():
-    context = {**lgstate(), }
+    context = {**get_lg_status(), }
     return render_template("settings.html", **context)
 
 
 @app.route('/help')
 def help():
-    context = {**lgstate(), }
+    context = {**get_lg_status(), }
     return render_template("help.html", **context)
 
 
 @app.route('/toggleswitch', methods=["POST"])
 def toggle_switch():
-    #  print(request.form["name"])
+    switch_name = request.form["name"]
+    if switch_name == 'lg-status':
+        activate_lg()
     return "OK"
 
 
