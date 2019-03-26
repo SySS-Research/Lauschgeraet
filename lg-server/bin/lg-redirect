@@ -40,50 +40,34 @@ lg-redirect [add udp|tcp <target ip> <targetport> <redirect ip> [<redirect port>
 EOF
 }
 
+# Create LG chain if it doesn't exist
+if ! iptables -t nat -L PREROUTING | grep -q ^LG 2> /dev/null ; then
+    iptables -t nat -N LG
+    iptables -t nat -A PREROUTING -j LG
+fi
+
 case $1 in
     'add')
 		if [[ $# -lt 5 ]] ; then usage ; exit 1 ; fi
-        PROT=$2
-		TIP=$3
-		TPORT=$4
-		RIP=$5
-		RPORT=$6
+        PROT="$2"
+		TIP="$3"
+		TPORT="$4"
+		RIP="$5"
+		RPORT="$6"
 		if [[ -z $RPORT ]] ; then RPORT=$TPORT ; fi
 
-		iptables_args="PREROUTING -i $INTERFACE \
-            -p $PROT --dport $TPORT --destination $TIP \
-            -j DNAT --to-destination $RIP:$RPORT"
+        iptables -t nat -A LG -i "$INTERFACE" \
+            -p "$PROT" --dport "$TPORT" --destination "$TIP" \
+            -j DNAT --to-destination "$RIP:$RPORT"
 
-        iptables -t nat -A $iptables_args && \
-			echo "$TIP;$TPORT;$RIP;$RPORT;$iptables_args" >> $REDIR_FILE
         ;;
 	'list')
-		counter=0
-		while IFS=";" read tip tport rip rport iptab ; do
-			echo "$counter) $tip:$tport -> $rip:$rport"
-			((counter++))
-		done < $REDIR_FILE
+        iptables -t nat -L -n -v --line-numbers
 		;;
     'del')
-		number=$2
-		if [[ -z $number ]] ; then  usage ; exit 1 ; fi
-		counter=0
-        rm "$REDIR_FILE.new"
-		while IFS=";" read tip tport rip rport iptab ; do
-			if [[ $counter = $number ]] ; then
-				iptables -t nat -D $iptab
-			else
-				echo "$tip;$tport;$rip;$rport;$iptab" >> $REDIR_FILE.new
-			fi
-			((counter++))
-		done < $REDIR_FILE
-		if [[ -z `diff $REDIR_FILE $REDIR_FILE.new` ]] ; then
-			echo "Number not found: $number"
-			exit 1
-		else
-			mv $REDIR_FILE.new $REDIR_FILE
-        fi
-        rm "$REDIR_FILE.new"
+		if [[ $# -lt 3 ]] ; then usage ; exit 1 ; fi
+		number="$2"
+        iptables -t nat -D LG "$number"
         ;;
     *)
 		usage
