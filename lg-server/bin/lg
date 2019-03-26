@@ -65,13 +65,13 @@ case $1 in
                 case `get-status` in
                     active)
                         lg-arptab down
-                        lg-nat down 
+                        lg-nat down
                         lg-brif down
-                        lg-allif down 
+                        lg-allif down
                         ;;
                     passive)
                         lg-brif down
-                        lg-allif down 
+                        lg-allif down
                         ;;
                     wifi)
                         lg-wifi down
