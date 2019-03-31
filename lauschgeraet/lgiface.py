@@ -12,12 +12,12 @@ def get_lg_status():
     if TEST:
         return {
             "lgstate": {
-                "enabled": False,
-                "mode": "deactivated",
+                "enabled": True,
+                "mode": "passive",
             }
         }
     cmd = 'lg status'
-    output = subprocess.check_output(cmd.split())
+    output = subprocess.check_output(cmd.split(), shell=True)
     # the cmd returns one of the following:
     # * passive
     # * active
@@ -33,3 +33,13 @@ def get_lg_status():
 
 def activate_lg():
     log.info("Activate Lauschgerät")
+
+
+def set_lg_mode(mode):
+    log.info("Setting Lauschgerät to '%s'" % mode)
+    try:
+        subprocess.check_output(["lg", "set", mode], shell=True)
+    except subprocess.CalledProcessError as e:
+        log.error("Setting mode failed: %s" % e.stdout.decode())
+        return e.stdout.decode()
+    return "OK"

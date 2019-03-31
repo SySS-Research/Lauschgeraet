@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, emit
 from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
         delete_iptables_rule
-from lauschgeraet.lgiface import get_lg_status, activate_lg
+from lauschgeraet.lgiface import get_lg_status, activate_lg, set_lg_mode
 import subprocess
 import logging
 
@@ -56,8 +56,13 @@ def index():
 
 @app.route('/setmode', methods=["POST"])
 def set_mode():
-    #  print(request.form["mode"])
-    return ""
+    mode = request.form["mode"]
+    if mode in "passive active wifi".split():
+        answer = set_lg_mode(mode)
+        # TODO flash answer
+        return answer
+    else:
+        return "unknown mode", 500
 
 
 @app.route('/stats')
