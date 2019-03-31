@@ -43,7 +43,7 @@ def send_img(path):
 
 
 @app.route('/')
-def index():
+def dashboard():
     context = {
         **get_lg_status(),
         "ipconfig": {
@@ -53,7 +53,7 @@ def index():
             "ss": get_ss()
         },
     }
-    return render_template("index.html", **context)
+    return render_template("dashboard.html", **context)
 
 
 @app.route('/setmode', methods=["POST"])
@@ -87,10 +87,10 @@ def mitm():
     return render_template("mitm.html", **context)
 
 
-@app.route('/extras')
-def extras():
+@app.route('/services')
+def services():
     context = {**get_lg_status(), }
-    return render_template("extras.html", **context)
+    return render_template("services.html", **context)
 
 
 @app.route('/shell')
