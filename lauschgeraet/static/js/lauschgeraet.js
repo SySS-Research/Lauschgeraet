@@ -31,9 +31,11 @@ function setMode(mode) {
 };
 
 function flash_message(data){
-    var msg = $('<div>').html(data);
-    $('#flash-msg').append(msg);
-    $('#flash-msg .toast').toast("show");
+    if (data) {
+        var msg = $('<div>').html(data);
+        $('#flash-msg').append(msg);
+        $('#flash-msg .toast').toast("show");
+    };
 };
 
 function update_mitm_rules(){
