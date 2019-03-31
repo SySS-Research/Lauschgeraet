@@ -7,8 +7,10 @@ function toggle_onoff() {
         url: '/toggleswitch',
         data: {"name":this.id},
         type: 'POST',
+        success: flash_message,
     });
     if ( this.id == "onoffswitch" ) {
+        // TODO verifiy status and set switch accordingly
         $('#lg-mode-li').toggleClass('disabled');
         $('#lg-mode-a').toggleClass('disabled');
     };

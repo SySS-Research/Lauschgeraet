@@ -5,7 +5,7 @@ from flask_socketio import SocketIO, emit
 from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
         delete_iptables_rule
-from lauschgeraet.lgiface import get_lg_status, activate_lg, set_lg_mode
+from lauschgeraet.lgiface import get_lg_status, set_lg_mode
 import subprocess
 import os
 import logging
@@ -122,9 +122,13 @@ def help():
 @app.route('/toggleswitch', methods=["POST"])
 def toggle_switch():
     switch_name = request.form["name"]
-    if switch_name == 'lg-status':
-        activate_lg()
-    return "OK"
+    if switch_name == 'onoffswitch':
+        out = set_lg_mode('active')
+        if out:
+            flash('Error while activating: %s' % out, "danger")
+        else:
+            flash('Lauschgerät activated', "success")
+    return render_template("messages.html")
 
 
 @app.route('/addrule', methods=["POST"])

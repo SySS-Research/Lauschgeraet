@@ -31,10 +31,6 @@ def get_lg_status():
     }
 
 
-def activate_lg():
-    log.info("Activate Lauschgerät")
-
-
 def set_lg_mode(mode):
     log.info("Setting Lauschgerät to '%s'" % mode)
     try:
