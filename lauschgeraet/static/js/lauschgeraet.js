@@ -23,7 +23,14 @@ function setMode(mode) {
         url: '/setmode',
         data: {"mode": mode},
         type: 'POST',
+        success: flash_message,
     });
+};
+
+function flash_message(data){
+    var msg = $('<div>').html(data);
+    $('#flash-msg').append(msg);
+    $('#flash-msg .toast').toast("show");
 };
 
 function ruleAdd() {

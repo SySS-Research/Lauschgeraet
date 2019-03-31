@@ -1,4 +1,5 @@
-from flask import Flask, render_template, send_from_directory, request
+from flask import Flask, render_template, send_from_directory, request, \
+        flash
 from flask.logging import default_handler
 from flask_socketio import SocketIO, emit
 from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
@@ -6,6 +7,7 @@ from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         delete_iptables_rule
 from lauschgeraet.lgiface import get_lg_status, activate_lg, set_lg_mode
 import subprocess
+import os
 import logging
 
 log = logging.getLogger(__name__)
@@ -16,11 +18,11 @@ logging.getLogger("watchdog.observers.inotify_buffer").setLevel(logging.INFO)
 logging.getLogger("socket").setLevel(logging.INFO)
 
 app = Flask(__name__)
+app.secret_key = os.urandom(16)
 socketio = SocketIO(app)
 
 
 def main():
-    #  app.run(debug=True, port=args.LPORT, host=args.LHOST)
     #  app.run(debug=True, port=1337)
     socketio.run(app, debug=True, port=1337)
 
@@ -58,11 +60,11 @@ def index():
 def set_mode():
     mode = request.form["mode"]
     if mode in "passive active wifi".split():
-        answer = set_lg_mode(mode)
-        # TODO flash answer
-        return answer
+        set_lg_mode(mode)
+        flash('Mode set to %s' % mode, "success")
     else:
-        return "unknown mode", 500
+        flash('Unknown mode: %s' % mode, "danger")
+    return render_template("messages.html")
 
 
 @app.route('/stats')
