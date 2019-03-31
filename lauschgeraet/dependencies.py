@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """This modules handles dependencies.
 
 It should run under both python2 and python3.
@@ -43,25 +45,24 @@ def dependencies_met():
 
 def lg_setup(*args):
     try:
-        cmd = os.path.join(get_script_path(),
-                           "lg-server",
-                           "lg-setup.sh",
-                           *args,
-                           )
+        cmd = [
+            os.path.join(
+                get_script_path(),
+                "lg-server",
+                "lg-setup.sh"
+            )
+        ] + [x[0] for x in args]
         log.info("Setting up the Lauschgerät by executing '%s'" % cmd)
-        out = subprocess.check_output(cmd, shell=True)
+        o = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         if sys.version_info > (3, 0):
-            strings = (e.returncode,
-                       e.stdout.decode(),
-                       e.stderr.decode(),
-                       )
+            strings = (e.returncode, e.stdout.decode())
         else:
-            strings = (e.returncode, e.stdout, e.stderr)
-        log.error("Setup returned with code %d: %s, %s" % strings)
+            strings = (e.returncode, e.output)
+        log.error("Setup returned with code %d: %s" % strings)
         return False
     if sys.version_info >= (3, 0):
-        log.info("Setup successful: %s" % out.decode())
+        log.info("Setup successful: %s" % o.decode())
     else:
-        log.info("Setup successful: %s" % out)
+        log.info("Setup successful: %s" % o)
     return True

@@ -17,7 +17,7 @@ def get_lg_status():
             }
         }
     cmd = 'lg status'
-    output = subprocess.check_output(cmd.split(), shell=True)
+    output = subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT)
     # the cmd returns one of the following:
     # * passive
     # * active
@@ -36,7 +36,6 @@ def set_lg_mode(mode):
     try:
         subprocess.check_output(
             ["lg", "set", mode],
-            shell=True,
             stderr=subprocess.STDOUT
         )
     except subprocess.CalledProcessError as e:

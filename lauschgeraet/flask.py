@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, send_from_directory, request, \
         flash
 from flask.logging import default_handler
@@ -24,7 +25,7 @@ socketio = SocketIO(app)
 
 def main():
     #  app.run(debug=True, port=1337)
-    socketio.run(app, debug=True, port=1337)
+    socketio.run(app, debug=True, host='0.0.0.0', port=1337)
 
 
 @app.route('/css/<path:path>')
@@ -123,7 +124,15 @@ def help():
 def toggle_switch():
     switch_name = request.form["name"]
     if switch_name == 'onoffswitch':
-        out = set_lg_mode('active')
+        status = get_lg_status()
+        if status == 'disabled':
+            out = set_lg_mode('passive')
+        elif status == 'passive':
+            out = set_lg_mode('disable')
+        else:
+            flash('Lauschgerät can only be disabled if the mode '
+                  'is "passive"', "danger")
+            return render_template("messages.html")
         if out:
             flash('Error while activating: %s' % out, "danger")
         else:

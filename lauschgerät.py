@@ -6,7 +6,7 @@ from lauschgeraet.dependencies import dependencies_met
 
 
 logging.basicConfig(
-    filename='/var/log/lauschgeraet.log',
+    handlers=[logging.FileHandler('/var/log/lauschgeraet.log', 'w', 'utf-8')],
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
@@ -20,9 +20,10 @@ if __name__ == "__main__":
         try:
             import lauschgeraet.flask as lf
             lf.main()
-        except ImportError:
+        except ImportError as e:
             # Not all dependencies were met after all
             DEPS_MET = False
+            log.warning("Missing module: %s" % str(e))
     if not DEPS_MET:
         log.warning("Dependencies not met, launching basic web server")
         import lauschgeraet.initial_webserver as iws

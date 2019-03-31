@@ -76,7 +76,6 @@ def add_iptables_rule(proto, old_dest, old_port, new_dest, new_port):
             new_dest,
             new_port,
             ],
-            shell=True,
             stderr=subprocess.STDOUT,
         )
     except Exception as e:
@@ -100,7 +99,6 @@ def delete_iptables_rule(n):
     try:
         subprocess.check_output(
                 ["lg-redirect", "del", n],
-                shell=True,
                 stderr=subprocess.STDOUT,
         )
     except Exception as e:
@@ -111,8 +109,8 @@ def delete_iptables_rule(n):
 
 def get_ip_config(n):
     devs = list_devices()
-    cmd = 'ip address show %s' % devs[n]
     try:
+        cmd = 'ip address show %s' % devs[n]
         result = subprocess.check_output(cmd.split())
     except Exception as e:
         logging.error(e)

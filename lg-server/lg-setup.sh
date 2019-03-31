@@ -34,9 +34,9 @@ apt-get update
 apt-get -y dist-upgrade
 apt-get -y install dnsmasq hostapd tcpdump ebtables bridge-utils arptables \
     arp-scan inetutils-tools net-tools iproute2 python-scapy \
-    python-netaddr python3 python3-flask python3-pip
+    python-netaddr python3 python3-pip
 
-pip3 install python-socketio
+pip3 install python-socketio flask flask-socketio
 
 echo "[*] Copying config files..."
 

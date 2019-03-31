@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This provides just a very simple web server in case flask is not
 installed. It gives further instructions for the set up.
 
@@ -50,7 +51,8 @@ built-in NIC is recommended)<br/>
 access! Must be at least eight characters long)<br>
 <button type="submit">Run Setup</button>
 </form>
-<p>If you tried this before, check the <a href="/log">log</a>.</p>
+<p>This may take a while. Do not turn the device off.
+If you tried this before, check the <a href="/log">log</a>.</p>
 </body></html>''',
     "net_details": '''
 <html><head><title>SySS Lauschger&auml;t - Network
@@ -136,8 +138,12 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.wfile.write(response)
 
         elif method == 'POST' and path == '/':
-            script_args = [args[k] for k in
-                           'atif clif swif wifif wifipw'.split()]
+            script_args = 'atiface cliface swiface wifiiface adminpass'
+            if sys.version_info >= (3, 0):
+                script_args = [args[k.encode()] for k in script_args.split()]
+            else:
+                script_args = [args[k] for k in script_args.split()]
+            # TODO stream stdout via HTTP
             if lg_setup(*script_args):
                 self.send_response(200)
                 self.end_headers()
