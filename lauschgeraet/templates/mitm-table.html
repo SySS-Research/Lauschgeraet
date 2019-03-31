@@ -1,0 +1,25 @@
+<table class="table table-striped table-sm" id='mitm-table'>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Protocol</th>
+      <th>Old Destination</th>
+      <th>New Destination</th>
+      <th style='width: 40px'>Actions</th>
+    </tr>
+  </thead>
+  <tbody> {% for r in rules %}
+    <tr id="rule-{{r.num}}">
+      <td>{{r.num}}</td>
+      <td class='editable'>{{r.prot}}</td>
+      <td class='editable'>{{r.destination}}</td>
+      <td class='editable'>{{r.extension}}</td>
+      <td>
+      <a href='#' class="nav-item edit-iptables-rule" title='Edit'
+      onclick='edit_mitm_rule({{r.num}})'><span data-feather="edit-2"></span></a>
+      <a href='#' class="nav-item delete-iptables-rule" title='Delete'
+      onclick='delete_mitm_rule({{r.num}})'><span data-feather="trash-2"></span></a>
+      </td>
+    </tr> {% endfor %}
+  </tbody>
+</table>

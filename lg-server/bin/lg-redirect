@@ -56,7 +56,7 @@ case $1 in
 
         ;;
 	'list')
-        iptables -t nat -L -n -v --line-numbers
+        iptables -t nat -L LG -n -v --line-numbers
 		;;
     'del')
 		if [[ $# -lt 3 ]] ; then usage ; exit 1 ; fi

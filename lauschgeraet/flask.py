@@ -78,7 +78,7 @@ def stats():
 
 @app.route('/mitm')
 def mitm():
-    rules = list_iptables('nat', 'PREROUTING')
+    rules = list_iptables('nat', 'LG')
     context = {
         **get_lg_status(),
         "rules": rules,
@@ -131,29 +131,68 @@ def toggle_switch():
     return render_template("messages.html")
 
 
+@app.route('/mitmtable', methods=["GET"])
+def mitmtable():
+    rules = list_iptables('nat', 'LG')
+    context = {
+        "rules": rules,
+    }
+    return render_template("mitm-table.html", **context)
+
+
 @app.route('/addrule', methods=["POST"])
 def add_rule():
-    return add_iptables_rule(request.form["proto"],
-                             request.form["port"],
-                             request.form["olddest"],
-                             request.form["newdest"]
-                             )
+    if ':' in request.form["olddest"]:
+        oldip, oldport = request.form["olddest"].split(':')
+    else:
+        flash("Your old destination must be of the form <IP>:<PORT>", "danger")
+        return render_template("messages.html")
+    if ':' in request.form["newdest"]:
+        newip, newport = request.form["newdest"].split(':')
+    else:
+        newip = request.form["newdest"]
+        newport = oldport
+    out = add_iptables_rule(
+        request.form["proto"],
+        oldip, oldport,
+        newip, newport,
+    )
+    if out:
+        flash("Error while adding rule: %s" % out, "danger")
+        return render_template("messages.html")
+    return ""
 
 
 @app.route('/editrule', methods=["POST"])
 def edit_rule():
-    #  print(request.form)
-    return replace_iptables_rule(request.form["number"],
-                                 request.form["proto"],
-                                 request.form["port"],
-                                 request.form["olddest"],
-                                 request.form["newdest"]
-                                 )
+    if ':' in request.form["olddest"]:
+        oldip, oldport = request.form["olddest"].split(':')
+    else:
+        flash("Your old destination must be of the form <IP>:<PORT>", "danger")
+        return render_template("messages.html")
+    if ':' in request.form["newdest"]:
+        newip, newport = request.form["newdest"].split(':')
+    else:
+        newip = request.form["newdest"]
+        newport = oldport
+    out = replace_iptables_rule(request.form["number"],
+                                request.form["proto"],
+                                oldip, oldport,
+                                newip, newport,
+                                )
+    if out:
+        flash("Error while adding rule: %s" % out, "danger")
+        return render_template("messages.html")
+    return ""
 
 
 @app.route('/deleterule', methods=["POST"])
 def delete_rule():
-    return delete_iptables_rule(request.form["number"])
+    out = delete_iptables_rule(request.form["number"])
+    if out:
+        flash("Error while deleting rule: %s" % out, "danger")
+        return render_template("messages.html")
+    return ""
 
 
 @app.route('/stub-newrule', methods=["GET"])
@@ -163,7 +202,6 @@ def stub_newrule():
         "rule": {
             "number": "",
             "prot": "",
-            "port": "",
             "olddest": "",
             "newdest": "",
         }
@@ -174,7 +212,7 @@ def stub_newrule():
 @app.route('/stub-editrule', methods=["GET"])
 def stub_editrule():
     n = int(request.args["n"])
-    rules = list_iptables('nat', 'PREROUTING')
+    rules = list_iptables('nat', 'LG')
     for r in rules:
         if int(r["num"]) == n:
             rule = r
@@ -182,9 +220,7 @@ def stub_editrule():
     rule = {
         "num": rule["num"],
         "proto": rule["prot"],
-        "port": "" if ':' not in rule["destination"] else
-        rule["destination"].split(':')[1],
-        "olddest": rule["destination"].split(':')[0],
+        "olddest": rule["destination"],
         "newdest": rule["extension"],
     }
     context = {

@@ -1,15 +1,13 @@
 <tr id='rule-{{rule["num"]}}'>
     <td id="new-rule-number">{{rule["num"]}}</td>
-    <td><input id="new-rule-proto" value='{{rule["proto"]}}'></input></td>
-    <td><input id="new-rule-port" value='{{rule["port"]}}'></input></td>
+    <td><select name='proto' id='new-rule-proto'><option value='tcp'>tcp</option><option
+    value='udp'>udp</option></td>
     <td><input id="new-rule-olddest" value='{{rule["olddest"]}}'></input></td>
     <td><input id="new-rule-newdest" value='{{rule["newdest"]}}'></input></td>
     <td>
-        <a href='#' class="nav-item rule-edit" onClick='{% if mode == "add" %}ruleAdd(){% else
-                    %}ruleEdit({{rule["num"]}}){% endif %}'>
+        <a href='#' class="nav-item rule-edit" onClick='{% if mode == "add" %}ruleAdd(){% else %}ruleEdit({{rule["num"]}}){% endif %}'>
             <span data-feather="check" id='check-button'></span></a>
-        <a href='#' class="nav-item rule-abort"
-                    onClick='ruleAbortEdit({{rule["num"]}})'>
+        <a href='#' class="nav-item rule-abort" onClick='update_mitm_rules()'>
             <span data-feather="x" id='abort-button'></span></a>
     </td>
 </tr>

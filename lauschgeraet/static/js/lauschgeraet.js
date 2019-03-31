@@ -10,7 +10,8 @@ function toggle_onoff() {
         success: flash_message,
     });
     if ( this.id == "onoffswitch" ) {
-        // TODO verifiy status and set switch accordingly
+        // TODO verifiy status and set switch accordingly. it might have
+        // failed
         $('#lg-mode-li').toggleClass('disabled');
         $('#lg-mode-a').toggleClass('disabled');
     };
@@ -35,22 +36,29 @@ function flash_message(data){
     $('#flash-msg .toast').toast("show");
 };
 
+function update_mitm_rules(){
+    $.get('/mitmtable', function(data) {
+        $('#mitm-table').replaceWith(data);
+        feather.replace();
+    });
+};
+
 function ruleAdd() {
     var proto = $('#new-rule-proto').val();
-    var port = $('#new-rule-port').val();
     var olddest = $('#new-rule-olddest').val();
     var newdest = $('#new-rule-newdest').val();
     $.ajax({
         url: '/addrule',
         data: {
             "proto": proto,
-            "port": port,
             "olddest": olddest,
             "newdest": newdest,
         },
         type: 'POST',
+        success: flash_message,
     });
-    location.reload();
+    update_mitm_rules();
+    // location.reload();
 };
 
 function ruleEdit() {
@@ -69,52 +77,48 @@ function ruleEdit() {
             "newdest": newdest,
         },
         type: 'POST',
+        success: flash_message,
     });
-    location.reload();
+    update_mitm_rules();
+    // location.reload();
 };
 
 function ruleAbort() {
-    $('#iptables-table > tbody > tr:last-child').remove();
+    $('#mitm-table > tbody > tr:last-child').remove();
 };
 
 function ruleAbortEdit(n) {
     // $(`#rule-${n}`).remove();
-    location.reload();
+    // location.reload();
+    update_mitm_rules();
 };
 
 $(document).ready(function(){
 	$('#add-iptables-rule').click(function(){
         $.get('/stub-newrule?add', function(data){
-            $('#iptables-table > tbody:last-child').append(data);
+            $('#mitm-table > tbody:last-child').append(data);
             feather.replace();
         });
     });
 });
 
-$(document).ready(function(){
-	$('.delete-iptables-rule').click(function(){
-        var line = $(this).closest('tr');
-        n = line.children().first().text();
-        $.ajax({
-            url: '/deleterule',
-            data: {
-                "number": n,
-            },
-            type: 'POST',
-        });
-        location.reload();
+function delete_mitm_rule(n){
+    var line = $(`#rule-${n}`);
+    $.ajax({
+        url: '/deleterule',
+        data: {
+            "number": n,
+        },
+        type: 'POST',
+        success: flash_message,
     });
-});
+    update_mitm_rules();
+};
 
-
-
-$(document).ready(function(){
-	$('.edit-iptables-rule').click(function(){
-        var line = $(this).closest('tr');
-        n = line.children().first().text();
-        $.get(`/stub-editrule?n=${n}`, function(data) {
-            line.replaceWith(data);
-            feather.replace();
-        });
+function edit_mitm_rule(n){
+    var line = $(`#rule-${n}`);
+    $.get(`/stub-editrule?n=${n}`, function(data) {
+        line.replaceWith(data);
+        feather.replace();
     });
-});
+};

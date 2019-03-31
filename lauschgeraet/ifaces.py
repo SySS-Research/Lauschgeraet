@@ -40,61 +40,73 @@ def list_iptables(table, chain):
     rules = rules.decode().split('\n')
     keys = []
     p = re.compile(r'\b\w+\b')
-    for m in p.finditer(rules[1]):
-        keys.append((m.start(), m.group()))
-    keys.append((keys[-1][0] + len(keys[-1][1]) + 2, "extension"))
-    rules = rules[2:-1]
-    result = []
-    for r in rules:
-        result.append({**{k[1]: r[k[0]:].split()[0] for k in keys[:-1]},
-                       **{keys[-1][1]: r[keys[-1][0]:].strip()}})
+    if len(rules) > 1:
+        for m in p.finditer(rules[1]):
+            keys.append((m.start(), m.group()))
+        keys.append((keys[-1][0] + len(keys[-1][1]) + 2, "extension"))
+        rules = rules[2:-1]
+        result = []
+        for r in rules:
+            r = ({**{k[1]: r[k[0]:].split()[0] for k in keys[:-1]},
+                  **{keys[-1][1]: r[keys[-1][0]:].strip()}})
+            if "dpt:" in r["extension"]:
+                r["destination"] = '%s:%s' % (
+                        r["destination"],
+                        r["extension"].split("dpt:")[1].split(" ")[0]
+                )
+            if "to:" in r["extension"]:
+                r["extension"] = r["extension"].split("to:")[1]
+            result.append(r)
 
-    return result
+        return result
+    return []
 
 
-def add_iptables_rule(proto, port, old_dest, new_dest):
-    # TODO replace with lg shell script
-    log.info('Adding iptables rule %s %s %s %s' % (proto, port, old_dest,
-                                                   new_dest))
-    chain = 'PREROUTING'
+def add_iptables_rule(proto, old_dest, old_port, new_dest, new_port):
+    log.info('Adding mitm rule %s %s %s %s' % (
+                proto, old_port, old_dest,
+                new_dest))
     try:
-        result = subprocess.check_output('iptables -t nat -A'.split() +
-                                         [chain, '-p', proto, '-d', old_dest,
-                                          '--dport', port, '-j', 'DNAT',
-                                          '--to-destination', new_dest],
-                                         stderr=subprocess.STDOUT,)
+        subprocess.check_output([
+            'lg-redirect',
+            'add',
+            proto,
+            old_dest,
+            old_port,
+            new_dest,
+            new_port,
+            ],
+            shell=True,
+            stderr=subprocess.STDOUT,
+        )
     except Exception as e:
-        log.error(e)
-    return result
+        log.error("%s: %s" % (str(e), e.stdout.decode()))
+        return(str(e.stdout.decode()))
+    return None
 
 
-def replace_iptables_rule(n, proto, port, old_dest, new_dest):
-    # TODO replace with lg shell script
-    log.info('Replacing iptables rule %s %s %s %s %s' % (n, proto, port,
-                                                         old_dest, new_dest))
-    chain = 'PREROUTING'
-    try:
-        result = subprocess.check_output('iptables -t nat -R'.split() +
-                                         [chain, n, '-p', proto, '-d',
-                                          old_dest, '-j', 'DNAT',
-                                          '--to-destination', new_dest],
-                                         stderr=subprocess.STDOUT,)
-    except Exception as e:
-        logging.error(e)
-    return result
+def replace_iptables_rule(n, proto, old_dest, old_port, new_dest, new_port):
+    out = delete_iptables_rule(n)
+    if out:
+        return out
+    out = add_iptables_rule(proto, old_dest, old_port, new_dest, new_port)
+    if out:
+        return out
+    return ""
 
 
 def delete_iptables_rule(n):
-    # TODO replace with lg shell script
-    log.info('Deleting iptables rule %s' % (n))
-    chain = 'PREROUTING'
+    log.info('Deleting mitm rule %s' % (n))
     try:
-        result = subprocess.check_output('iptables -t nat -D'.split() +
-                                         [chain, n],
-                                         stderr=subprocess.STDOUT,)
+        subprocess.check_output(
+                ["lg-redirect", "del", n],
+                shell=True,
+                stderr=subprocess.STDOUT,
+        )
     except Exception as e:
-        logging.error(e)
-    return result
+        log.error("%s: %s" % (e, e.stdout.decode()))
+        return(str(e.stdout.decode()))
+    return None
 
 
 def get_ip_config(n):
