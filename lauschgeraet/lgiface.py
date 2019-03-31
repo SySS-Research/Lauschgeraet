@@ -38,8 +38,12 @@ def activate_lg():
 def set_lg_mode(mode):
     log.info("Setting Lauschgerät to '%s'" % mode)
     try:
-        subprocess.check_output(["lg", "set", mode], shell=True)
+        subprocess.check_output(
+            ["lg", "set", mode],
+            shell=True,
+            stderr=subprocess.STDOUT
+        )
     except subprocess.CalledProcessError as e:
         log.error("Setting mode failed: %s" % e.stdout.decode())
         return e.stdout.decode()
-    return "OK"
+    return None

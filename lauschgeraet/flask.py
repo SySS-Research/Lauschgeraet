@@ -60,8 +60,11 @@ def index():
 def set_mode():
     mode = request.form["mode"]
     if mode in "passive active wifi".split():
-        set_lg_mode(mode)
-        flash('Mode set to %s' % mode, "success")
+        out = set_lg_mode(mode)
+        if out:
+            flash('Error while setting mode: %s' % out, "danger")
+        else:
+            flash('Mode set to %s' % mode, "success")
     else:
         flash('Unknown mode: %s' % mode, "danger")
     return render_template("messages.html")
