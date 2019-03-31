@@ -58,13 +58,11 @@ function ruleAdd() {
         success: flash_message,
     });
     update_mitm_rules();
-    // location.reload();
 };
 
 function ruleEdit() {
     var number = document.getElementById("new-rule-number").innerHTML;
     var proto = $('#new-rule-proto').val();
-    var port = $('#new-rule-port').val();
     var olddest = $('#new-rule-olddest').val();
     var newdest = $('#new-rule-newdest').val();
     $.ajax({
@@ -72,7 +70,6 @@ function ruleEdit() {
         data: {
             "number": number,
             "proto": proto,
-            "port": port,
             "olddest": olddest,
             "newdest": newdest,
         },
@@ -80,18 +77,8 @@ function ruleEdit() {
         success: flash_message,
     });
     update_mitm_rules();
-    // location.reload();
 };
 
-function ruleAbort() {
-    $('#mitm-table > tbody > tr:last-child').remove();
-};
-
-function ruleAbortEdit(n) {
-    // $(`#rule-${n}`).remove();
-    // location.reload();
-    update_mitm_rules();
-};
 
 $(document).ready(function(){
 	$('#add-iptables-rule').click(function(){
