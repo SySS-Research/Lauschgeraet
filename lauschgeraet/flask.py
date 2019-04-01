@@ -6,7 +6,7 @@ from flask_socketio import SocketIO, emit
 from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
         delete_iptables_rule
-from lauschgeraet.lgiface import get_lg_status, set_lg_mode
+from lauschgeraet.lgiface import get_lg_status, set_lg_status
 import subprocess
 import os
 import logging
@@ -61,7 +61,7 @@ def dashboard():
 def set_mode():
     mode = request.form["mode"]
     if mode in "passive active wifi".split():
-        out = set_lg_mode(mode)
+        out = set_lg_status(mode)
         if out:
             flash('Error while setting mode: %s' % out, "danger")
         else:
@@ -123,21 +123,46 @@ def help():
 @app.route('/toggleswitch', methods=["POST"])
 def toggle_switch():
     switch_name = request.form["name"]
+    status = get_lg_status()['lgstate']['status']
     if switch_name == 'onoffswitch':
-        status = get_lg_status()
-        if status == 'disabled':
-            out = set_lg_mode('passive')
-        elif status == 'passive':
-            out = set_lg_mode('disable')
+        if status == 'passive':
+            out = set_lg_status('disable')
+        elif status == 'disabled':
+            out = set_lg_status('passive')
         else:
-            flash('Lauschgerät can only be disabled if the mode '
-                  'is "passive"', "danger")
+            flash('Current mode must be "passive" or "disabled" for this',
+                  "danger")
             return render_template("messages.html")
-        if out:
-            flash('Error while activating: %s' % out, "danger")
+    elif switch_name == 'activeswitch':
+        if status == 'passive':
+            out = set_lg_status('active')
+        elif status == 'active':
+            out = set_lg_status('passive')
         else:
-            flash('Lauschgerät activated', "success")
-    return render_template("messages.html")
+            flash('Current mode must be "passive" or "active" for this',
+                  "danger")
+            return render_template("messages.html")
+    elif switch_name == 'wifiswitch':
+        if status == 'wifi':
+            out = set_lg_status('disabled')
+        elif status == 'disabled':
+            out = set_lg_status('wifi')
+        else:
+            flash('Current mode must be "wifi" or "disabled" for this',
+                  "danger")
+            return render_template("messages.html")
+    if out:
+        flash('Error setting status: %s' % out, "danger")
+        return render_template("messages.html")
+    return ""
+
+
+@app.route('/state', methods=["GET"])
+def state():
+    context = {
+        **get_lg_status(),
+    }
+    return render_template("statusbar.html", **context)
 
 
 @app.route('/mitmtable', methods=["GET"])

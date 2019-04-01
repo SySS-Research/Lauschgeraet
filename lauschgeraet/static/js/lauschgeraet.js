@@ -9,12 +9,10 @@ function toggle_onoff() {
         type: 'POST',
         success: flash_message,
     });
-    if ( this.id == "onoffswitch" ) {
-        // TODO verifiy status and set switch accordingly. it might have
-        // failed
-        $('#lg-mode-li').toggleClass('disabled');
-        $('#lg-mode-a').toggleClass('disabled');
-    };
+    $.get('/state', function(data) {
+        $('#lg-status').replaceWith(data);
+        $('.ajax-switch').change(toggle_onoff);
+    });
 }
 
 $(document).ready(function(){

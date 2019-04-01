@@ -13,11 +13,13 @@ def get_lg_status():
         return {
             "lgstate": {
                 "enabled": True,
-                "mode": "passive",
+                "active": True,
+                "wifi": False,
+                "status": "active",
             }
         }
-    cmd = 'lg status'
-    output = subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT)
+    output = subprocess.check_output(['lg', 'status'],
+                                     stderr=subprocess.STDOUT)
     # the cmd returns one of the following:
     # * passive
     # * active
@@ -26,12 +28,14 @@ def get_lg_status():
     return {
         "lgstate": {
             "enabled": not output == b'disabled',
-            "mode": output.decode(),
+            "active": output == b'active',
+            "wifi": output == b'wifi',
+            "status": output.decode(),
         }
     }
 
 
-def set_lg_mode(mode):
+def set_lg_status(mode):
     log.info("Setting Lauschgerät to '%s'" % mode)
     try:
         subprocess.check_output(
@@ -41,4 +45,7 @@ def set_lg_mode(mode):
     except subprocess.CalledProcessError as e:
         log.error("Setting mode failed: %s" % e.stdout.decode())
         return e.stdout.decode()
+    except Exception as e:
+        log.error("Setting mode failed: %s" % e)
+        return str(e)
     return None

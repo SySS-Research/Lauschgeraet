@@ -1,35 +1,40 @@
-<div class="collapse navbar-collapse" id="navbarsExample03">
-<ul class="navbar-nav mr-auto">
-  <li class="nav-item container">
-    <div class="custom-control custom-switch">
-      <input type="checkbox" class="ajax-switch custom-control-input" id="onoffswitch" {% if lgstate["enabled"] %}checked{% endif %}>
-      <label class="custom-control-label nav-link active" for="onoffswitch">
+<div class="collapse navbar-collapse" id="lg-status">
+  <div class="navbar-nav">
+    <div class="custom-control custom-switch container">
+      <input type="checkbox" class="ajax-switch custom-control-input"
+      {% if (lgstate["wifi"] or lgstate["active"]) %}disabled{% endif %}
+      {% if lgstate["enabled"] %}checked{% endif %}
+      id="onoffswitch">
+      <label class="custom-control-label nav-link
+      {% if not (lgstate["wifi"] or lgstate["active"]) %}active{% endif %}" for="onoffswitch">
           On/Off
       </label>
     </div>
-  </li>
-  <!--
-  <li class="nav-item container {% if not lgstate["enabled"] %}disabled{% endif %}">
-    <div class="custom-control custom-switch">
-      <input type="checkbox" class="ajax-switch custom-control-input {% if not lgstate["enabled"] %}disabled{% endif %}" id="recordswitch" {% if lgstate["recording"] %}checked{% endif %}>
-      <label class="custom-control-label nav-link {% if lgstate["recording"] %}active{% endif %}" for="recordswitch">
-          Recording
+
+    <div class="custom-control custom-switch container form-inline">
+      <input type="checkbox" class="ajax-switch custom-control-input btn-success"
+      {% if lgstate["active"] %}checked{% endif %}
+      {% if not lgstate["enabled"] %}disabled{% endif %}
+      id="activeswitch">
+      <label class="custom-control-label nav-link
+      {% if lgstate["enabled"] %}active{% endif %}" for="activeswitch">
+          Passive/Active
       </label>
     </div>
-  </li>
-  -->
-  <li id='lg-status' class='nav-item dropdown {% if not lgstate["enabled"] %}disabled{% endif %}'>
-    <a id='lg-mode' class='nav-link dropdown-toggle {% if not lgstate["enabled"] %}disabled{% endif %}'
-        href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">Mode</a>
-    <div class="dropdown-menu" aria-labelledby="dropdown03">
-        <a class='dropdown-item {% if lgstate["mode"]=="passive" %}active{%
-        endif %}' href="#" onClick="setMode('passive')">Passive</a>
-      <a class='dropdown-item {% if lgstate["mode"]=="active" %}active{%
-      endif %}' href="#" onClick="setMode('active')">Active</a>
-      <a class='dropdown-item {% if lgstate["mode"]=="wifi" %}active{% endif
-      %}' href="#" onClick="setMode('wifi')">Wifi</a>
+
+    <div class="custom-control custom-switch container">
+      <input type="checkbox" class="ajax-switch custom-control-input btn-warning"
+      {% if lgstate["wifi"] %}checked{% endif %}
+      {% if lgstate["enabled"] %}disabled{% endif %}
+      id="wifiswitch">
+      <label class="custom-control-label nav-link
+      {% if not lgstate["enabled"] %}active{% endif %}" for="wifiswitch">
+          Wifi
+      </label>
     </div>
-  </li>
-</ul>
+
+    <div class="custom-control custom-switch container">
+      <a class="nav-item nav-link text-nowrap active" href="#" tabindex="-1" aria-disabled="false"> Status: {{lgstate["status"]}} </a>
+    </div>
+  </div>
 </div>
