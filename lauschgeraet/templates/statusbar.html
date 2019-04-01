@@ -34,7 +34,11 @@
     </div>
 
     <div class="custom-control custom-switch container">
-      <a class="nav-item nav-link text-nowrap active" href="#" tabindex="-1" aria-disabled="false"> Status: {{lgstate["status"]}} </a>
+      <a class="nav-item nav-link text-nowrap active" href="#" tabindex="-1" aria-disabled="false" title="What's this?" data-toggle="popover"
+data-trigger="focus" data-content="Here you can set the status of the
+Lauschgerät. It can be disabled, passive, active or in wifi mode. In wifi
+mode all clients in the wifi will be man-in-the-middled, so make sure to
+control the Lauschgerät via LAN.">Status: {{lgstate["status"]}} <span data-feather="help-circle"></span></a>
     </div>
   </div>
 </div>

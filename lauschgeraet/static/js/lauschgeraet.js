@@ -12,6 +12,7 @@ function toggle_onoff() {
     $.get('/state', function(data) {
         $('#lg-status').replaceWith(data);
         $('.ajax-switch').change(toggle_onoff);
+        feather.replace();
     });
 }
 
