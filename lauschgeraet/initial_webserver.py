@@ -69,8 +69,12 @@ details</h1>
 def online_status():
     http = check_output("wget -O- --quiet -S clients3.google.com".split(),
                         stderr=STDOUT)
-    if http.startswith(b"  HTTP"):
-        return "Online"
+    if sys.version_info >= (3, 0):
+        if http.startswith(b"  HTTP"):
+            return "Online"
+    else:
+        if http.startswith("  HTTP"):
+            return "Online"
     return "Offline"
 
 
