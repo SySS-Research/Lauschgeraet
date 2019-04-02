@@ -2,8 +2,8 @@
   <div class="navbar-nav">
     <div class="custom-control custom-switch container">
       <input type="checkbox" class="ajax-switch custom-control-input"
-      {% if (lgstate["wifi"] or lgstate["active"]) %}disabled{% endif %}
-      {% if lgstate["enabled"] %}checked{% endif %}
+      {% if lgstate["wifi"] %}disabled{% endif %}
+      {% if lgstate["enabled"] and not lgstate["wifi"] %}checked{% endif %}
       id="onoffswitch">
       <label class="custom-control-label nav-link
       {% if not (lgstate["wifi"] or lgstate["active"]) %}active{% endif %}" for="onoffswitch">
@@ -14,10 +14,10 @@
     <div class="custom-control custom-switch container form-inline">
       <input type="checkbox" class="ajax-switch custom-control-input btn-success"
       {% if lgstate["active"] %}checked{% endif %}
-      {% if not lgstate["enabled"] %}disabled{% endif %}
+      {% if not lgstate["enabled"] or lgstate["wifi"]%}disabled{% endif %}
       id="activeswitch">
       <label class="custom-control-label nav-link
-      {% if lgstate["enabled"] %}active{% endif %}" for="activeswitch">
+      {% if lgstate["enabled"] and not lgstate["wifi"] %}active{% endif %}" for="activeswitch">
           Passive/Active
       </label>
     </div>
@@ -25,10 +25,10 @@
     <div class="custom-control custom-switch container">
       <input type="checkbox" class="ajax-switch custom-control-input btn-warning"
       {% if lgstate["wifi"] %}checked{% endif %}
-      {% if lgstate["enabled"] %}disabled{% endif %}
+      {% if lgstate["active"] or lgstate["status"]=='passive' %}disabled{% endif %}
       id="wifiswitch">
       <label class="custom-control-label nav-link
-      {% if not lgstate["enabled"] %}active{% endif %}" for="wifiswitch">
+      {% if not (lgstate["active"] or lgstate["status"]=='passive') %}active{% endif %}" for="wifiswitch">
           Wifi
       </label>
     </div>

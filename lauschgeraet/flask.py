@@ -125,7 +125,10 @@ def toggle_switch():
     switch_name = request.form["name"]
     status = get_lg_status()['lgstate']['status']
     if switch_name == 'onoffswitch':
-        out = set_lg_status('disable')
+        if status == 'disabled':
+            out = set_lg_status('passive')
+        else:
+            out = set_lg_status('disable')
     elif switch_name == 'activeswitch':
         if status == 'passive':
             out = set_lg_status('active')
@@ -137,7 +140,7 @@ def toggle_switch():
             return render_template("messages.html")
     elif switch_name == 'wifiswitch':
         if status == 'wifi':
-            out = set_lg_status('disabled')
+            out = set_lg_status('disable')
         elif status == 'disabled':
             out = set_lg_status('wifi')
         else:

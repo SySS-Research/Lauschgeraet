@@ -1,4 +1,9 @@
 $(document).ready(function() {
+    $.get('/state', function(data) {
+        $('#lg-status').replaceWith(data);
+        $('.ajax-switch').change(toggle_onoff);
+        feather.replace();
+    });
     $('.ajax-switch').change(toggle_onoff);
 });
 
@@ -7,14 +12,18 @@ function toggle_onoff() {
         url: '/toggleswitch',
         data: {"name":this.id},
         type: 'POST',
-        success: flash_message,
+        success: toggle_onoff_callback,
     });
+}
+
+function toggle_onoff_callback(response) {
     $.get('/state', function(data) {
         $('#lg-status').replaceWith(data);
         $('.ajax-switch').change(toggle_onoff);
         feather.replace();
     });
-}
+    flash_message(response);
+};
 
 $(document).ready(function(){
     $('[data-toggle="popover"]').popover();

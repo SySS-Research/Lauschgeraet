@@ -6,11 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 
 TEST = os.path.exists('testing')
-
-
-def get_lg_status():
-    if TEST:
-        return {
+TEST_STATE = {
             "lgstate": {
                 "enabled": True,
                 "active": True,
@@ -18,6 +14,11 @@ def get_lg_status():
                 "status": "active",
             }
         }
+
+
+def get_lg_status():
+    if TEST:
+        return TEST_STATE
     output = subprocess.check_output(['lg', 'status'],
                                      stderr=subprocess.STDOUT)
     output = output.replace(b'\n', b'').decode()
@@ -38,8 +39,22 @@ def get_lg_status():
 
 def set_lg_status(mode):
     log.info("Setting Lauschgerät to '%s'" % mode)
+    if TEST:
+        global TEST_STATE
+        output = mode
+        if mode == 'disable':
+            output = 'disabled'
+        TEST_STATE = {
+            "lgstate": {
+                "enabled": not output == 'disabled',
+                "active": output == 'active',
+                "wifi": output == 'wifi',
+                "status": output,
+            }
+        }
+        return None
     try:
-        subprocess.check_output(
+        out = subprocess.check_output(
             ["lg", "set", mode],
             stderr=subprocess.STDOUT
         )
@@ -49,4 +64,5 @@ def set_lg_status(mode):
     except Exception as e:
         log.error("Setting mode failed: %s" % e)
         return str(e)
+    log.info("Output from 'lg set': %s" % out.decode())
     return None
