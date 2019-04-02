@@ -3,7 +3,7 @@ Description=SySS Lauschgerät
 After=syslog.target
 
 [Service]
-Environment="PATH=/usr/sbin"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 Type=simple
 User=root
 Group=root
