@@ -20,6 +20,7 @@ def get_lg_status():
         }
     output = subprocess.check_output(['lg', 'status'],
                                      stderr=subprocess.STDOUT)
+    output = output.decode().replace('\n', b'')
     # the cmd returns one of the following:
     # * passive
     # * active
@@ -27,9 +28,9 @@ def get_lg_status():
     # * disabled
     return {
         "lgstate": {
-            "enabled": not output == b'disabled',
-            "active": output == b'active',
-            "wifi": output == b'wifi',
+            "enabled": not output == 'disabled',
+            "active": output == 'active',
+            "wifi": output == 'wifi',
             "status": output.decode(),
         }
     }

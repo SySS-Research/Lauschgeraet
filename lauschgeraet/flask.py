@@ -125,14 +125,7 @@ def toggle_switch():
     switch_name = request.form["name"]
     status = get_lg_status()['lgstate']['status']
     if switch_name == 'onoffswitch':
-        if status == 'passive':
-            out = set_lg_status('disable')
-        elif status == 'disabled':
-            out = set_lg_status('passive')
-        else:
-            flash('Current mode must be "passive" or "disabled" for this',
-                  "danger")
-            return render_template("messages.html")
+        out = set_lg_status('disable')
     elif switch_name == 'activeswitch':
         if status == 'passive':
             out = set_lg_status('active')
