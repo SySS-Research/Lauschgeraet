@@ -7,7 +7,7 @@ It should run under both python2 and python3.
 
 from html import escape
 from lauschgeraet.dependencies import lg_setup
-from subprocess import check_output
+from subprocess import check_output, STDOUT
 import logging
 import sys
 
@@ -67,8 +67,9 @@ details</h1>
 
 
 def online_status():
-    http = check_output("curl -Is clients3.google.com".split())
-    if http.startswith(b"HTTP"):
+    http = check_output("wget -O- --quiet -S clients3.google.com".split(),
+                        stderr=STDOUT)
+    if http.startswith(b"  HTTP"):
         return "Online"
     return "Offline"
 
