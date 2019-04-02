@@ -128,7 +128,7 @@ def toggle_switch():
         if status == 'disabled':
             out = set_lg_status('passive')
         else:
-            out = set_lg_status('disable')
+            out = set_lg_status('disabled')
     elif switch_name == 'activeswitch':
         if status == 'passive':
             out = set_lg_status('active')
@@ -140,7 +140,7 @@ def toggle_switch():
             return render_template("messages.html")
     elif switch_name == 'wifiswitch':
         if status == 'wifi':
-            out = set_lg_status('disable')
+            out = set_lg_status('disabled')
         elif status == 'disabled':
             out = set_lg_status('wifi')
         else:

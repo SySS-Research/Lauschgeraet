@@ -42,8 +42,6 @@ def set_lg_status(mode):
     if TEST:
         global TEST_STATE
         output = mode
-        if mode == 'disable':
-            output = 'disabled'
         TEST_STATE = {
             "lgstate": {
                 "enabled": not output == 'disabled',

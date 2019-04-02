@@ -12,7 +12,7 @@ Valid values for <status> are:
     passive
     active [PREFIX]
     wifi
-    disable
+    disabled
 
 PREFIX is the prefix of the client's subnet (default: 24) "
 }
@@ -61,7 +61,7 @@ case $1 in
                     exit 1
                 fi
                 ;;
-            disable)
+            disabled)
                 case `get-status` in
                     active)
                         lg-arptab down
