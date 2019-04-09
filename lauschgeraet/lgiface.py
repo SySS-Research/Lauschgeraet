@@ -22,7 +22,7 @@ SW_IFACE = args.SW_IFACE
 CL_IFACE = args.CL_IFACE
 
 ns_setup = [
-    # create a network namespace named "sandbox"
+    # create a network namespace
     'ip netns add ' + LG_NS,
 
     # Assign the "inside" interface to the network namespace
@@ -31,7 +31,6 @@ ns_setup = [
 ]
 
 ns_teardown = [
-    'ip link del outside',
     'ip netns del %s' % LG_NS,
 ]
 
