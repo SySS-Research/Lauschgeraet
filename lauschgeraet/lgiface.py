@@ -17,6 +17,42 @@ TEST_STATE = {
             }
         }
 LG_NS = "lg"
+SW_IFACE = "eth0"
+CL_IFACE = "eth1"
+
+ns_setup = [
+    # create a network namespace named "sandbox"
+    'ip netns add ' + LG_NS,
+
+    # Assign the "inside" interface to the network namespace
+    'ip link set netns %s %s' % (LG_NS, SW_IFACE),
+    'ip link set netns %s %s' % (LG_NS, CL_IFACE),
+]
+
+ns_teardown = [
+    'ip link del outside',
+    'ip netns del %s' % LG_NS,
+]
+
+
+def run_steps(steps, ignore_errors=False):
+    for step in steps:
+        try:
+            print('+ {}'.format(step))
+            subprocess.check_call(step, shell=True)
+        except subprocess.CalledProcessError:
+            if ignore_errors:
+                pass
+            else:
+                raise
+
+
+def init_ns():
+    run_steps(ns_setup)
+
+
+def teardown_ns():
+    run_steps(ns_teardown)
 
 
 def get_script_path():
