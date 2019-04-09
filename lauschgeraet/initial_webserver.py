@@ -6,7 +6,7 @@ It should run under both python2 and python3.
 """
 
 from html import escape
-from lauschgeraet.dependencies import lg_setup
+from lauschgeraet.lgiface import lg_setup
 from subprocess import check_output, STDOUT
 import logging
 import sys

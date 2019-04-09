@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from lauschgeraet.dependencies import dependencies_met
+from lauschgeraet.lgiface import dependencies_met
 
 
 logging.basicConfig(
