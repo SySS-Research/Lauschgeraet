@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 import logging
+import netns
 log = logging.getLogger(__name__)
 
 TEST = os.path.exists('testing')
@@ -15,6 +16,7 @@ TEST_STATE = {
                 "status": "active",
             }
         }
+LG_NS = "lg"
 
 
 def get_script_path():
@@ -39,7 +41,8 @@ def lg_exec(*args):
             "lg-server",
         )
     ] + [x[0] for x in args]
-    output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    with netns.NetNS(nsname=LG_NS):
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     return output
 
 
