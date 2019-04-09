@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from lauschgeraet.args import args
 import subprocess
 import os
 import sys
@@ -17,8 +18,8 @@ TEST_STATE = {
             }
         }
 LG_NS = "lg"
-SW_IFACE = "eth0"
-CL_IFACE = "eth1"
+SW_IFACE = args.SW_IFACE
+CL_IFACE = args.CL_IFACE
 
 ns_setup = [
     # create a network namespace named "sandbox"
