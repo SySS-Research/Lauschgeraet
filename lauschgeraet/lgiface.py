@@ -45,17 +45,21 @@ def dependencies_met():
     return True
 
 
+def lg_exec(*args):
+    cmd = [
+        os.path.join(
+            get_script_path(),
+            "lg-server",
+        )
+    ] + [x[0] for x in args]
+    output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    return output
+
+
 def lg_setup(*args):
     try:
-        cmd = [
-            os.path.join(
-                get_script_path(),
-                "lg-server",
-                "lg-setup.sh"
-            )
-        ] + [x[0] for x in args]
-        log.info("Setting up the Lauschgerät by executing '%s'" % cmd)
-        o = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        log.info("Setting up the Lauschgerät")
+        o = lg_exec("lg-setup.sh",)
     except subprocess.CalledProcessError as e:
         if sys.version_info > (3, 0):
             strings = (e.returncode, e.stdout.decode())
@@ -69,11 +73,11 @@ def lg_setup(*args):
         log.info("Setup successful: %s" % o)
     return True
 
+
 def get_lg_status():
     if TEST:
         return TEST_STATE
-    output = subprocess.check_output(['lg', 'status'],
-                                     stderr=subprocess.STDOUT)
+    output = lg_exec('lg', 'status')
     output = output.replace(b'\n', b'').decode()
     # the cmd returns one of the following:
     # * passive
@@ -105,10 +109,7 @@ def set_lg_status(mode):
         }
         return None
     try:
-        out = subprocess.check_output(
-            ["lg", "set", mode],
-            stderr=subprocess.STDOUT
-        )
+        out = lg_exec("lg", "set", mode)
     except subprocess.CalledProcessError as e:
         log.error("Setting mode failed: %s" % e.stdout.decode())
         return e.stdout.decode()
