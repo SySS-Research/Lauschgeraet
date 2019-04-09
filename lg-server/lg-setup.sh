@@ -32,11 +32,8 @@ echo "[*] Installing dependencies..."
 
 apt-get update
 apt-get -y dist-upgrade
-apt-get -y install dnsmasq hostapd tcpdump ebtables bridge-utils arptables \
-    arp-scan inetutils-tools net-tools iproute2 python-scapy \
-    python-netaddr python3 python3-pip
-
-pip3 install --user netns python-socketio flask flask-socketio
+cat "$rootdir/../requirements-system.txt" | xargs sudo apt-get -y install
+pip3 install --user -r "$rootdir/../requirements.txt"
 
 echo "[*] Copying config files..."
 
