@@ -48,6 +48,7 @@ py_env = {
 ns_setup = [
     # clean up status file: always start disabled
     'rm %s/status' % py_env["TMPDIR"],
+
     # create a network namespace
     'ip netns add ' + LG_NS,
 

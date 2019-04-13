@@ -17,6 +17,9 @@ rmdir $MNT
 case $1 in
     'up')
         . <(lg-getgw|tee $GATEWAYINFO)
+        [ -z "$GWMAC" ] && echo "Failed to get gateway" && exit 1
+        [ -z "$CLMAC" ] && echo "Failed to get gateway" && exit 1
+        [ -z "$CLIP" ] && echo "Failed to get gateway" && exit 1
         ebtables -t nat -A POSTROUTING -s $SWMAC -o $SWIF \
             -j snat --to-src $CLMAC
         ebtables -t nat -A POSTROUTING -s $SWMAC -o $BRIF \

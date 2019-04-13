@@ -11,13 +11,19 @@
     </div>
 
     <div class="custom-control custom-switch container form-inline">
-      <input type="checkbox" class="ajax-switch custom-control-input btn-success"
-      {% if lgstate["active"] %}checked{% endif %}
-      {% if not lgstate["enabled"] or lgstate["wifi"]%}disabled{% endif %}
-      id="activeswitch">
-      <label class="custom-control-label nav-link {% if lgstate["enabled"] and not lgstate["wifi"] %} active{% endif %}" for="activeswitch">
-          Passive/Active
-      </label>
+        {% if lgstate["status"] == 'waiting' %}
+            <div class="spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+            </div>
+        {% else %}
+          <input type="checkbox" class="ajax-switch custom-control-input btn-success"
+          {% if lgstate["active"] %}checked{% endif %}
+          {% if not lgstate["enabled"] or lgstate["wifi"]%}disabled{% endif %}
+          id="activeswitch">
+          <label class="custom-control-label nav-link {% if lgstate["enabled"] and not lgstate["wifi"] %} active{% endif %}" for="activeswitch">
+              Passive/Active
+          </label>
+        {% endif %}
     </div>
 
     <div class="custom-control custom-switch container">

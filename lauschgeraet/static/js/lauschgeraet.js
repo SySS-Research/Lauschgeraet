@@ -14,6 +14,7 @@ function toggle_onoff() {
         type: 'POST',
         success: toggle_onoff_callback,
     });
+    // replace with waiting indicator, a spinner or someting
 }
 
 function toggle_onoff_callback(response) {
