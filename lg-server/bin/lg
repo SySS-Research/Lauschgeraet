@@ -3,8 +3,8 @@
 #Version 1.0
 
 BD=$(dirname $0)
+PATH="$PATH:$BD"
 . "$BD/lg-config.sh"
-STATUSFILE=$TMPDIR/status
 
 function usage {
     echo "lg [status|set <status>]
@@ -34,10 +34,13 @@ case $1 in
             passive)
                 case `get-status` in
                     'disabled')
-                        lg-allif up && lg-brif up && echo passive > $STATUSFILE
+                        lg-allif up && \
+                            lg-brif up && \
+                            (echo passive > $STATUSFILE) || exit 1
                         ;;
                     'active')
-                        lg-nat down && echo passive > $STATUSFILE
+                        lg-nat down && \
+                            (echo passive > $STATUSFILE) || exit 1
                         ;;
                     *)
                         echo "Status must be 'disabled' or 'active'!"
@@ -47,7 +50,9 @@ case $1 in
                 ;;
             active)
                 if [[ `get-status` = passive ]] ; then
-                    lg-nat up && lg-arptab up $3 && echo active > $STATUSFILE
+                    lg-nat up && \
+                        lg-arptab up $3 && \
+                        (echo active > $STATUSFILE) || exit 1
                 else
                     echo "Status must be 'passive'!"
                     exit 1
@@ -55,7 +60,7 @@ case $1 in
                 ;;
             wifi)
                 if [[ `get-status` = disabled ]] ; then
-                    lg-wifi up && echo wifi > $STATUSFILE
+                    lg-wifi up && (echo wifi > $STATUSFILE) || exit 1
                 else
                     echo "Status must be 'disabled'!"
                     exit 1
@@ -64,17 +69,21 @@ case $1 in
             disabled)
                 case `get-status` in
                     active)
-                        lg-arptab down
-                        lg-nat down
-                        lg-brif down
-                        lg-allif down
+                        lg-arptab down && \
+                        lg-nat down && \
+                        lg-brif down && \
+                        lg-allif down || exit 1
                         ;;
                     passive)
-                        lg-brif down
-                        lg-allif down
+                        lg-brif down && lg-allif down || exit 1
+                        ;;
+                    waiting)
+                        kill `cat $STATUSFILE.PID` && \
+                            rm $STATUSFILE.PID && \
+                            lg-brif down && lg-allif down || exit 1
                         ;;
                     wifi)
-                        lg-wifi down
+                        lg-wifi down || exit 1
                         ;;
                 esac
                 rm $STATUSFILE

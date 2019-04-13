@@ -2,9 +2,17 @@
 
 BD=$(dirname $0)
 . "$BD/lg-config.sh"
-BRMAC=$(cat /sys/class/net/$BRIF/address)
+
+# the sys fs does not behave as you would expect when it comes to
+# network namespaces. see:
+# https://unix.stackexchange.com/questions/457025/switching-into-a-network-namespace-does-not-change-sys-class-net
+MNT=`mktemp -d`
+mount -t sysfs none $MNT
+BRMAC=$(cat $MNT/class/net/$BRIF/address)
 GATEWAYINFO=$TMPDIR/gatewayinfo.sh
-SWMAC=$(cat /sys/class/net/$SWIF/address)
+SWMAC=$(cat $MNT/class/net/$SWIF/address)
+umount $MNT
+rmdir $MNT
 
 case $1 in
     'up')

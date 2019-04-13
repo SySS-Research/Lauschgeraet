@@ -3,6 +3,8 @@
 BD=$(dirname $0)
 . "$BD/lg-config.sh"
 
+set -e
+
 case $1 in
     'up')
         # Ausgehende ARP Pakete verwerfen
@@ -14,6 +16,7 @@ case $1 in
         # Interfaces starten
         ifconfig $SWIF inet 0.0.0.0 up promisc
         ifconfig $CLIF inet 0.0.0.0 up promisc
+        exit 0
         ;;
 
     'down')
@@ -21,6 +24,7 @@ case $1 in
         ifconfig $CLIF inet 0.0.0.0 down
         arptables -P OUTPUT ACCEPT
         arptables -F OUTPUT
+        exit 0
         ;;
 
     *)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from lauschgeraet.lgiface import dependencies_met
+from lauschgeraet.lgiface import dependencies_met, init_ns, teardown_ns
 
 
 logging.basicConfig(
@@ -19,7 +19,9 @@ if __name__ == "__main__":
     if DEPS_MET:
         try:
             import lauschgeraet.flask as lf
+            init_ns()
             lf.main()
+            teardown_ns()
         except ImportError as e:
             # Not all dependencies were met after all
             DEPS_MET = False

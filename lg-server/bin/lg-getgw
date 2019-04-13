@@ -3,10 +3,17 @@
 BD=$(dirname $0)
 . "$BD/lg-config.sh"
 
-TCPDUMP_FILE=/tmp/boot.pcap
+TCPDUMP_FILE=$TMPDIR/boot.pcap
 FILTER="udp dst port 53 or tcp dst port 88"
 echo "Waiting for DNS or Kerberos packet..." >&2
+echo 'waiting' > $STATUSFILE
+echo $$ > $STATUSFILE.PID
 tcpdump -i $CLIF -s0 -w "$TCPDUMP_FILE" -c1 "$FILTER" 2> /dev/null
+if [ $? -ne 0 ] ; then
+    echo 'failed' > $STATUSFILE
+    echo 'tcpdump failed' >&2
+    exit 1
+fi
 output=`tcpdump -r "$TCPDUMP_FILE" -nne -c 1 "$FILTER" 2> /dev/null`
 echo "Got it!" >&2
 

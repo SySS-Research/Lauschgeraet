@@ -8,6 +8,11 @@ import logging
 import netns
 log = logging.getLogger(__name__)
 
+
+def get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
+
+
 TEST = os.path.exists('testing')
 TEST_STATE = {
             "lgstate": {
@@ -18,16 +23,47 @@ TEST_STATE = {
             }
         }
 LG_NS = "lg"
-SW_IFACE = args.SW_IFACE
-CL_IFACE = args.CL_IFACE
+
+# set environment variables for the bash scripts
+py_env = {
+    "LG_ENV_BY_PYTHON": "1",
+    "ATIF": "lgPeer",
+    "SWIF": args.SW_IFACE,
+    "CLIF": args.CL_IFACE,
+    "GWIF": "lgGateway",
+    "WIFIIF": "",
+    "BRIF": 'br0',
+    "BRIP": '192.0.2.1',
+    "GWIP": '192.0.2.254',  # bogus gateway
+    "ATNET": '203.0.113.0/24',
+    "WIFINET": '198.51.100.0/24',
+    "RANGE": "61000-62000",
+    "TMPDIR": os.path.join(
+        get_script_path(),
+        "lg-server",
+        ".tmp",
+    )
+}
 
 ns_setup = [
+    # clean up status file: always start disabled
+    'rm %s/status' % py_env["TMPDIR"],
     # create a network namespace
     'ip netns add ' + LG_NS,
 
-    # Assign the "inside" interface to the network namespace
-    'ip link set netns %s %s' % (LG_NS, SW_IFACE),
-    'ip link set netns %s %s' % (LG_NS, CL_IFACE),
+    # Assign the interfaces to the new network namespace
+    'ip link set netns %s %s' % (LG_NS, py_env["SWIF"]),
+    'ip link set netns %s %s' % (LG_NS, py_env["CLIF"]),
+
+    # create a pair of veth interfaces
+    'ip link add %s type veth peer name %s' % (py_env["GWIF"], py_env["ATIF"]),
+
+    # Assign the AT interface to the network namespace
+    'ip link set netns %s %s' % (LG_NS, py_env["ATIF"]),
+
+    # Arrange to masquerade outbound packets from the network
+    # namespace.
+    'iptables -t nat -A POSTROUTING -o %s -j MASQUERADE' % py_env["GWIF"],
 ]
 
 ns_teardown = [
@@ -38,25 +74,24 @@ ns_teardown = [
 def run_steps(steps, ignore_errors=False):
     for step in steps:
         try:
-            print('+ {}'.format(step))
-            subprocess.check_call(step, shell=True)
-        except subprocess.CalledProcessError:
+            subprocess.check_output(step,
+                                    shell=True,
+                                    stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
             if ignore_errors:
-                pass
+                log.warning("%s: %s" % (str(e), e.stdout.decode()))
             else:
                 raise
 
 
 def init_ns():
-    run_steps(ns_setup)
+    log.info("Creating network namespace")
+    run_steps(ns_setup, True)
 
 
 def teardown_ns():
+    log.info("Removing network namespace")
     run_steps(ns_teardown)
-
-
-def get_script_path():
-    return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 
 def dependencies_met():
@@ -75,17 +110,22 @@ def lg_exec(*args):
         os.path.join(
             get_script_path(),
             "lg-server",
+            "bin",
+            [*args][0],
         )
-    ] + [x[0] for x in args]
+    ] + [*args][1:]
+    my_env = {**os.environ.copy(), **py_env}
     with netns.NetNS(nsname=LG_NS):
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        output = subprocess.check_output(cmd,
+                                         env=my_env,
+                                         stderr=subprocess.STDOUT)
     return output
 
 
 def lg_setup(*args):
     try:
         log.info("Setting up the Lauschgerät")
-        o = lg_exec("lg-setup.sh",)
+        o = lg_exec("../lg-setup.sh",)
     except subprocess.CalledProcessError as e:
         if sys.version_info > (3, 0):
             strings = (e.returncode, e.stdout.decode())
@@ -110,6 +150,8 @@ def get_lg_status():
     # * active
     # * wifi
     # * disabled
+    # * waiting
+    # * failed
     return {
         "lgstate": {
             "enabled": not output == 'disabled',

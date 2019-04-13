@@ -2,17 +2,26 @@
 
 BD=$(dirname $0)
 . "$BD/lg-config.sh"
-SWMAC=$(cat /sys/class/net/$SWIF/address)
 
 case $1 in
     'up')
+        # the sys fs does not behave as you would expect when it comes to
+        # network namespaces. see:
+        # https://unix.stackexchange.com/questions/457025/switching-into-a-network-namespace-does-not-change-sys-class-net
+        MNT=`mktemp -d`
+        mount -t sysfs none $MNT
+        SWMAC=$(cat $MNT/class/net/$SWIF/address)
+
         brctl addbr $BRIF
         ifconfig $BRIF inet $BRIP up promisc
         brctl addif $BRIF $SWIF
         brctl addif $BRIF $CLIF
-	ip link set dev $BRIF address $SWMAC
+        ip link set dev $BRIF address $SWMAC
         iptables -t filter -A OUTPUT -s $BRIP -j DROP
-        echo 8 > /sys/class/net/$BRIF/bridge/group_fwd_mask
+        echo 8 > $MNT/class/net/$BRIF/bridge/group_fwd_mask
+        umount $MNT
+        rmdir $MNT
+        exit 0
         ;;
 
     'down')

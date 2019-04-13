@@ -5,8 +5,7 @@
       {% if lgstate["wifi"] %}disabled{% endif %}
       {% if lgstate["enabled"] and not lgstate["wifi"] %}checked{% endif %}
       id="onoffswitch">
-      <label class="custom-control-label nav-link
-      {% if not (lgstate["wifi"] or lgstate["active"]) %}active{% endif %}" for="onoffswitch">
+      <label class="custom-control-label nav-link{% if not (lgstate["wifi"] or lgstate["active"]) %} active{% endif %}" for="onoffswitch">
           On/Off
       </label>
     </div>
@@ -16,8 +15,7 @@
       {% if lgstate["active"] %}checked{% endif %}
       {% if not lgstate["enabled"] or lgstate["wifi"]%}disabled{% endif %}
       id="activeswitch">
-      <label class="custom-control-label nav-link
-      {% if lgstate["enabled"] and not lgstate["wifi"] %}active{% endif %}" for="activeswitch">
+      <label class="custom-control-label nav-link {% if lgstate["enabled"] and not lgstate["wifi"] %} active{% endif %}" for="activeswitch">
           Passive/Active
       </label>
     </div>
@@ -27,8 +25,7 @@
       {% if lgstate["wifi"] %}checked{% endif %}
       {% if lgstate["active"] or lgstate["status"]=='passive' %}disabled{% endif %}
       id="wifiswitch">
-      <label class="custom-control-label nav-link
-      {% if not (lgstate["active"] or lgstate["status"]=='passive') %}active{% endif %}" for="wifiswitch">
+      <label class="custom-control-label nav-link{% if not (lgstate["active"] or lgstate["status"]=='passive') %} active{% endif %}" for="wifiswitch">
           Wifi
       </label>
     </div>
