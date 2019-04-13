@@ -48,8 +48,7 @@ def dashboard():
     context = {
         **get_lg_status(),
         "ipconfig": {
-            "iface1": get_ip_config(1),
-            "iface2": get_ip_config(2),
+            "ipaddr": get_ip_config(),
             "iproute": get_ip_route(),
             "ss": get_ss()
         },

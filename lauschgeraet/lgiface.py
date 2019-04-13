@@ -47,7 +47,7 @@ py_env = {
 
 ns_setup = [
     # clean up status file: always start disabled
-    'rm %s/status' % py_env["TMPDIR"],
+    'rm -f %s/status' % py_env["TMPDIR"],
 
     # create a network namespace
     'ip netns add ' + LG_NS,
@@ -81,6 +81,7 @@ def run_steps(steps, ignore_errors=False):
         except subprocess.CalledProcessError as e:
             if ignore_errors:
                 log.warning("%s: %s" % (str(e), e.stdout.decode()))
+                break
             else:
                 raise
 

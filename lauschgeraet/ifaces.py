@@ -1,7 +1,10 @@
 import os
 import re
 import subprocess
+import netns
+import netifaces
 import logging
+from lauschgeraet.lgiface import lg_exec, LG_NS
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +20,8 @@ def ls(path):
 
 
 def list_devices():
-    return ls('/sys/class/net/')
+    with netns.NetNS(nsname=LG_NS):
+        return netifaces.interfaces()
 
 
 def iptables_raw(table, chain=""):
@@ -28,7 +32,8 @@ def iptables_raw(table, chain=""):
         chain = chain + " --line-numbers"
     cmd = 'iptables -t %s -L %s -v -n' % (table, chain)
     try:
-        rules = subprocess.check_output(cmd.split())
+        with netns.NetNS(nsname=LG_NS):
+            rules = subprocess.check_output(cmd.split())
     except Exception as e:
         log.error(e)
         return b""
@@ -67,16 +72,14 @@ def add_iptables_rule(proto, old_dest, old_port, new_dest, new_port):
                 proto, old_port, old_dest,
                 new_dest))
     try:
-        subprocess.check_output([
-            'lg-redirect',
-            'add',
-            proto,
-            old_dest,
-            old_port,
-            new_dest,
-            new_port,
-            ],
-            stderr=subprocess.STDOUT,
+        lg_exec(
+            "lg-redirect add %s %s %s %s %s" % (
+                proto,
+                old_dest,
+                old_port,
+                new_dest,
+                new_port,
+            )
         )
     except Exception as e:
         log.error("%s: %s" % (str(e), e.stdout.decode()))
@@ -97,21 +100,18 @@ def replace_iptables_rule(n, proto, old_dest, old_port, new_dest, new_port):
 def delete_iptables_rule(n):
     log.info('Deleting mitm rule %s' % (n))
     try:
-        subprocess.check_output(
-                ["lg-redirect", "del", n],
-                stderr=subprocess.STDOUT,
-        )
+        lg_exec("lg-redirect del %d" % n)
     except Exception as e:
         log.error("%s: %s" % (e, e.stdout.decode()))
         return(str(e.stdout.decode()))
     return None
 
 
-def get_ip_config(n):
-    devs = list_devices()
+def get_ip_config():
     try:
-        cmd = 'ip address show %s' % devs[n]
-        result = subprocess.check_output(cmd.split())
+        cmd = 'ip address show'
+        with netns.NetNS(nsname=LG_NS):
+            result = subprocess.check_output(cmd.split())
     except Exception as e:
         logging.error(e)
         return ""
@@ -121,7 +121,8 @@ def get_ip_config(n):
 def get_ip_route():
     cmd = 'ip route show'
     try:
-        result = subprocess.check_output(cmd.split())
+        with netns.NetNS(nsname=LG_NS):
+            result = subprocess.check_output(cmd.split())
     except Exception as e:
         logging.error(e)
         return ""
@@ -131,7 +132,8 @@ def get_ip_route():
 def get_ss():
     cmd = 'ss -ntulp'
     try:
-        result = subprocess.check_output(cmd.split())
+        with netns.NetNS(nsname=LG_NS):
+            result = subprocess.check_output(cmd.split())
     except Exception as e:
         logging.error(e)
         return ""
