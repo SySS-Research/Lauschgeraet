@@ -1,6 +1,49 @@
 {% extends "base.html" %}
 
 {% block extras_class %}active{% endblock %}
-{% block title %}Services{% endblock %}
-{% block main %}<p>work in progress</p>{% endblock %}
+{% block title %}Services
+<a href="#" title="What's this?" data-toggle="popover"
+data-trigger="focus" data-content="Here you can run and monitor services to
+which you can divert traffic."><span data-feather="help-circle"></span></a>
+{% endblock %}
 
+{% block main %}
+<div id='services'>
+{% for service in services %}
+    <div class="service card" id="service-{{loop.index}}">
+        <div class="service-header card-header d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 border-bottom" id="service-header-{{loop.index}}">
+            <h3 class="h3">
+                {% if service.running %}
+                    <span class="badge badge-success">Success</span>
+                {% endif %}
+                {{service.properties.display_name.value}}</h3>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group mr-2">
+                <button class="btn btn-sm btn-outline-secondary">Start</button>
+                <button class="btn btn-sm btn-outline-secondary">Stop</button>
+              </div>
+              <div class="btn-group mr-2">
+                <button class="btn btn-sm btn-outline-secondary">Show Output</button>
+              </div>
+              <button class="btn btn-sm btn-outline-secondary" data-toggle="collapse" data-target="#service-form-{{loop.index}}" aria-expanded="false" aria-controls="service-form-{{loop.index}}"> More <a href="#"><span data-feather="chevrons-down"></span></a>
+              </button>
+            </div>
+        </div>
+        <div class="service-form collapse card-body" id="service-form-{{loop.index}}">
+           <form> {% set outer_loop = loop %}
+            <h4>Service Properties</h4>
+               {% for name, p in service["properties"].items() %}
+                    {% include "services-paramform.html" %}
+               {% endfor %}
+               <hr/>
+            <h4>Command Line Parameters</h4>
+               {% for name, p in service["parameters"].items() %}
+                    {% include "services-paramform.html" %}
+               {% endfor %}
+               <button type="submit" class="btn btn-primary">Update</button>
+               <button class="btn btn-secondary">Edit JSON</button>
+            </form>
+        </div>
+    </div>
+{% endfor %}
+</div>{% endblock %}

@@ -7,6 +7,7 @@ from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
         delete_iptables_rule
 from lauschgeraet.lgiface import get_lg_status, set_lg_status
+from lauschgeraet.services import get_services
 import subprocess
 import os
 import logging
@@ -89,7 +90,11 @@ def mitm():
 
 @app.route('/services')
 def services():
-    context = {**get_lg_status(), }
+    services = get_services()
+    context = {
+        "services": services,
+        **get_lg_status(),
+    }
     return render_template("services.html", **context)
 
 

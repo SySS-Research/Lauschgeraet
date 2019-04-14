@@ -62,6 +62,17 @@ ns_setup = [
     # Assign the AT interface to the network namespace
     'ip link set netns %s %s' % (LG_NS, py_env["ATIF"]),
 
+    # Assign an address to the gateway interface
+    'ip addr add %s dev %s' % (py_env["ATNET"].replace('.0/', '.2/'),
+                               py_env["GWIF"]),
+    'ip link set %s up' % py_env["GWIF"],
+    # Assign an address to the attacker interface
+    'ip netns exec %s ip addr add %s dev %s' % (
+        LG_NS,
+        py_env["ATNET"].replace('.0/', '.1/'),
+        py_env["ATIF"]),
+    'ip netns exec %s ip link set %s up' % (LG_NS, py_env["ATIF"]),
+
     # Arrange to masquerade outbound packets from the network
     # namespace.
     'iptables -t nat -A POSTROUTING -o %s -j MASQUERADE' % py_env["GWIF"],
@@ -70,6 +81,7 @@ ns_setup = [
 ns_teardown = [
     'ip link del %s' % py_env["GWIF"],
     'ip netns del %s' % LG_NS,
+    'iptables -t nat -D POSTROUTING -o %s -j MASQUERADE' % py_env["GWIF"],
 ]
 
 

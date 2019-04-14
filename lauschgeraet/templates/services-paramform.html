@@ -1,0 +1,16 @@
+<div class="form-group row">
+  <label class="col-form-label col-sm-2"
+         for="service-{{outer_loop.index}}-{{name}}">
+      {{p["description"]}}
+  </label>
+  <div class="col-sm-10">
+      <input type="{{p["type"]}}"
+             class="form-control"
+             id="service-{{outer_loop.index}}-{{name}}"
+             aria-describedby="service-{{outer_loop.index}}-{{name}}-help"
+             value="{{p["value"]}}">
+      <small id="service-{{outer_loop.index}}-{{name}}-help"
+             class="form-text text-muted">{{p["help"]}}</small>
+ </div>
+</div>
+
