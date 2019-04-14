@@ -2,9 +2,9 @@ import os
 import re
 import subprocess
 import netns
-import netifaces
 import logging
 from lauschgeraet.lgiface import lg_exec, LG_NS
+from lauschgeraet.args import LG_NS_MODE
 
 log = logging.getLogger(__name__)
 
@@ -19,11 +19,6 @@ def ls(path):
     return os.listdir(path)
 
 
-def list_devices():
-    with netns.NetNS(nsname=LG_NS):
-        return netifaces.interfaces()
-
-
 def iptables_raw(table, chain=""):
     if ' ' in table or (chain and ' ' in chain):
         logging.error('Spaces not allowed table or chain name')
@@ -32,7 +27,10 @@ def iptables_raw(table, chain=""):
         chain = chain + " --line-numbers"
     cmd = 'iptables -t %s -L %s -v -n' % (table, chain)
     try:
-        with netns.NetNS(nsname=LG_NS):
+        if LG_NS_MODE:
+            with netns.NetNS(nsname=LG_NS):
+                rules = subprocess.check_output(cmd.split())
+        else:
             rules = subprocess.check_output(cmd.split())
     except Exception as e:
         log.error(e)
@@ -110,7 +108,10 @@ def delete_iptables_rule(n):
 def get_ip_config():
     try:
         cmd = 'ip address show'
-        with netns.NetNS(nsname=LG_NS):
+        if LG_NS_MODE:
+            with netns.NetNS(nsname=LG_NS):
+                result = subprocess.check_output(cmd.split())
+        else:
             result = subprocess.check_output(cmd.split())
     except Exception as e:
         logging.error(e)
@@ -121,7 +122,10 @@ def get_ip_config():
 def get_ip_route():
     cmd = 'ip route show'
     try:
-        with netns.NetNS(nsname=LG_NS):
+        if LG_NS_MODE:
+            with netns.NetNS(nsname=LG_NS):
+                result = subprocess.check_output(cmd.split())
+        else:
             result = subprocess.check_output(cmd.split())
     except Exception as e:
         logging.error(e)
@@ -132,7 +136,10 @@ def get_ip_route():
 def get_ss():
     cmd = 'ss -ntulp'
     try:
-        with netns.NetNS(nsname=LG_NS):
+        if LG_NS_MODE:
+            with netns.NetNS(nsname=LG_NS):
+                result = subprocess.check_output(cmd.split())
+        else:
             result = subprocess.check_output(cmd.split())
     except Exception as e:
         logging.error(e)

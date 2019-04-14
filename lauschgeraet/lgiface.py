@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from lauschgeraet.args import args
+from lauschgeraet.args import args, LG_NS_MODE
 import subprocess
 import os
 import sys
@@ -68,6 +68,7 @@ ns_setup = [
 ]
 
 ns_teardown = [
+    'ip link del %s' % py_env["GWIF"],
     'ip netns del %s' % LG_NS,
 ]
 
@@ -87,13 +88,15 @@ def run_steps(steps, ignore_errors=False):
 
 
 def init_ns():
-    log.info("Creating network namespace")
-    run_steps(ns_setup, True)
+    if LG_NS_MODE:
+        log.info("Creating network namespace")
+        run_steps(ns_setup, True)
 
 
 def teardown_ns():
-    log.info("Removing network namespace")
-    run_steps(ns_teardown)
+    if LG_NS_MODE:
+        log.info("Removing network namespace")
+        run_steps(ns_teardown, True)
 
 
 def dependencies_met():
@@ -117,7 +120,12 @@ def lg_exec(*args):
         )
     ] + [*args][1:]
     my_env = {**os.environ.copy(), **py_env}
-    with netns.NetNS(nsname=LG_NS):
+    if LG_NS_MODE:
+        with netns.NetNS(nsname=LG_NS):
+            output = subprocess.check_output(cmd,
+                                             env=my_env,
+                                             stderr=subprocess.STDOUT)
+    else:
         output = subprocess.check_output(cmd,
                                          env=my_env,
                                          stderr=subprocess.STDOUT)
