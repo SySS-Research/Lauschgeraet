@@ -7,7 +7,7 @@ from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         get_ss, list_iptables, add_iptables_rule, replace_iptables_rule, \
         delete_iptables_rule
 from lauschgeraet.lgiface import get_lg_status, set_lg_status
-from lauschgeraet.services import get_services
+from lauschgeraet.services import SERVICES
 import subprocess
 import os
 import logging
@@ -26,7 +26,12 @@ socketio = SocketIO(app)
 
 def main():
     #  app.run(debug=True, port=1337)
-    socketio.run(app, debug=True, host='0.0.0.0', port=1337)
+    socketio.run(
+            app,
+            debug=True,
+            use_reloader=False,
+            host='0.0.0.0',
+            port=1337)
 
 
 @app.route('/css/<path:path>')
@@ -90,12 +95,42 @@ def mitm():
 
 @app.route('/services')
 def services():
-    services = get_services()
     context = {
-        "services": services,
+        "services": SERVICES,
         **get_lg_status(),
     }
     return render_template("services.html", **context)
+
+
+@app.route('/stopservice', methods=["POST"])
+def stop_service():
+    n = int(request.form["n"])-1
+    try:
+        SERVICES[n].stop()
+        flash("Service stopped", "success")
+    except Exception as e:
+        log.exception('Error while stopping service')
+        flash(str(e), "danger")
+    return render_template("messages.html")
+
+
+@app.route('/startservice', methods=["POST"])
+def start_service():
+    n = int(request.form["n"])-1
+    try:
+        SERVICES[n].start()
+        flash("Service started", "success")
+    except Exception as e:
+        log.exception('Error while starting service')
+        flash(str(e), "danger")
+    return render_template("messages.html")
+
+
+@app.route('/service-log', methods=["GET"])
+def service_output():
+    n = int(request.args["n"])-1
+    output = SERVICES[n].get_output()
+    return render_template("service-log.html", OUTPUT=output)
 
 
 @app.route('/shell')
@@ -105,7 +140,7 @@ def shell():
 
 
 @app.route('/log')
-def log():
+def getlog():
     with open('/var/log/lauschgeraet.log') as f:
         log = f.read()
     context = {**get_lg_status(), "log": log}

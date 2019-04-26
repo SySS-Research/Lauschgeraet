@@ -10,20 +10,26 @@ which you can divert traffic."><span data-feather="help-circle"></span></a>
 {% block main %}
 <div id='services'>
 {% for service in services %}
-    <div class="service card" id="service-{{loop.index}}">
+    <div class="service card" id="service-{{loop.index}}" data-id='{{loop.index}}'>
         <div class="service-header card-header d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 border-bottom" id="service-header-{{loop.index}}">
             <h3 class="h3">
-                {% if service.running %}
+                {% if service.running() %}
                     <span class="badge badge-success">Success</span>
                 {% endif %}
                 {{service.properties.display_name.value}}</h3>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
-                <button class="btn btn-sm btn-outline-secondary">Start</button>
-                <button class="btn btn-sm btn-outline-secondary">Stop</button>
+                <button class="btn btn-sm btn-outline-secondary"
+                        onclick='startservice({{loop.index}})'>Start</button>
+                <button class="btn btn-sm btn-outline-secondary"
+                    onclick='stopservice({{loop.index}})'>Stop</button>
               </div>
               <div class="btn-group mr-2">
-                <button class="btn btn-sm btn-outline-secondary">Show Output</button>
+                <button class="btn btn-sm btn-outline-secondary show-service-output"
+                        href="/service-log?n={{loop.index}}"
+                        data-remote="false"
+                        data-target="#service-output-modal"
+                        data-toggle="modal">Show Output</button>
               </div>
               <button class="btn btn-sm btn-outline-secondary" data-toggle="collapse" data-target="#service-form-{{loop.index}}" aria-expanded="false" aria-controls="service-form-{{loop.index}}"> More <a href="#"><span data-feather="chevrons-down"></span></a>
               </button>
@@ -46,4 +52,22 @@ which you can divert traffic."><span data-feather="help-circle"></span></a>
         </div>
     </div>
 {% endfor %}
+
+<div class="modal fade"
+     id='service-output-modal'
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+  <div class="modal-dialog modal-xl" style='height: 80%'>
+    <div class="modal-content" style='height: 80%'>
+      <div class="modal-header">
+        <h5 class="modal-title">Console Output</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>{% endblock %}

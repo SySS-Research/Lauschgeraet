@@ -93,7 +93,7 @@ def run_steps(steps, ignore_errors=False):
                                     stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             if ignore_errors:
-                log.warning("%s: %s" % (str(e), e.stdout.decode()))
+                log.error("%s: %s" % (str(e), e.stdout.decode()))
                 break
             else:
                 raise
@@ -102,7 +102,7 @@ def run_steps(steps, ignore_errors=False):
 def init_ns():
     if LG_NS_MODE:
         log.info("Creating network namespace")
-        run_steps(ns_setup, True)
+        run_steps(ns_setup)
 
 
 def teardown_ns():

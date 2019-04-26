@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import subprocess
+from subprocess import Popen, PIPE, check_output
 import json
-import netns
+#  from lauschgeraet.args import LG_NS_MODE
+#  from lauschgeraet.lgiface import LG_NS
+from multiprocessing import Process, Queue
+from queue import Empty
+
 import logging
-from lauschgeraet.args import LG_NS_MODE
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +25,14 @@ MANDATORY_PROPERTIES = [
 ]
 
 
+def enqueue_output(out, err, queue):
+    for line in iter(out.readline, b''):
+        queue.put(line)
+    for line in iter(err.readline, b''):
+        queue.put(line)
+    out.close()
+
+
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
@@ -34,10 +45,6 @@ def list_installed_services():
     result = os.listdir(path)
     result = [p.replace(".json", "") for p in result if p.endswith(".json")]
     return result
-
-
-def get_services():
-    return [LGService(s) for s in list_installed_services()]
 
 
 class MandatoryParameterNotFound(Exception):
@@ -67,6 +74,7 @@ class LGService(object):
         with open(filename) as json_file:
             d = json.load(json_file)
         self._update_json(d)
+        self.output = ""
 
     def _update_json(self, d):
         for p in MANDATORY_PARAMETERS:
@@ -98,13 +106,51 @@ class LGService(object):
         }
 
     def start(self):
-        pass
+        # save thread
+        # https://stackoverflow.com/questions/49492550/start-another-process-in-background-and-capture-output-in-python
+        # https://stackoverflow.com/questions/16768290/understanding-popen-communicate
+        # https://stackoverflow.com/questions/375427/non-blocking-read-on-a-subprocess-pipe-in-python
+        params = {key: value["value"] for key, value in
+                  self._dict["parameters"].items()}
+        args = self._dict["properties"]["argstring"]["value"] % params
+        args = args.split()
+        self.cmd = [self._dict["properties"]["path"]["value"]] + args
+        log.info("Executing: %s" % ' '.join(self.cmd))
+        # TODO run in daemon
+        # https://stackoverflow.com/questions/25542110/kill-child-process-if-parent-is-killed-in-python
+        self._p = Popen(self.cmd,
+                        stdin=PIPE, stdout=PIPE, stderr=PIPE,
+                        bufsize=1,
+                        close_fds=True)
+        print(self._p.pid)
+        self._q = Queue()
+        self._t = Process(target=enqueue_output, args=(self._p.stdout,
+                                                       self._p.stderr,
+                                                       self._q))
+        self._t.daemon = True  # thread dies with the program
+        self._t.start()
 
     def stop(self):
-        pass
+        # kill thread
+        log.info("Killing: %s" % ' '.join(self.cmd))
+        check_output(['kill', '-15', str(self._p.pid)])
+
+    def running(self):
+        try:
+            return self._t.is_alive()
+        except AttributeError:
+            return False
 
     def get_output(self):
-        pass
+        if not self.running():
+            return "<not running>"
+        while True:
+            try:
+                line = self._q.get_nowait()  # or q.get(timeout=.1)
+                self.output += line.decode()
+            except Empty:
+                break
+        return self.output
 
     def update_json(self, jsondata):
         d = json.loads(jsondata)
@@ -116,3 +162,6 @@ class LGService(object):
 
     def __getitem__(self, key):
         return self._dict[key]
+
+
+SERVICES = [LGService(s) for s in list_installed_services()]

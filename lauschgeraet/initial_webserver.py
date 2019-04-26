@@ -7,7 +7,7 @@ It should run under both python2 and python3.
 
 from html import escape
 from lauschgeraet.lgiface import lg_setup
-from subprocess import check_output, STDOUT
+from subprocess import check_output, STDOUT, CalledProcessError
 import logging
 import sys
 
@@ -67,8 +67,11 @@ details</h1>
 
 
 def online_status():
-    http = check_output("wget -O- --quiet -S clients3.google.com".split(),
-                        stderr=STDOUT)
+    try:
+        http = check_output("wget -O- --quiet -S clients3.google.com".split(),
+                            stderr=STDOUT)
+    except CalledProcessError:
+        return "Offline"
     if sys.version_info >= (3, 0):
         if http.startswith(b"  HTTP"):
             return "Online"

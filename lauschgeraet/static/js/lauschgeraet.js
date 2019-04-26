@@ -120,3 +120,30 @@ function edit_mitm_rule(n){
         feather.replace();
     });
 };
+
+function startservice(n) {
+    $.ajax({
+        url: '/startservice',
+        data: {
+            "n": n,
+        },
+        type: 'POST',
+        success: flash_message,
+    });
+};
+
+function stopservice(n) {
+    $.ajax({
+        url: '/stopservice',
+        data: {
+            "n": n,
+        },
+        type: 'POST',
+        success: flash_message,
+    });
+};
+
+$("#service-output-modal").on("show.bs.modal", function(e) {
+    var link = $(e.relatedTarget);
+    $(this).find(".modal-body").load(link.attr("href"));
+});
