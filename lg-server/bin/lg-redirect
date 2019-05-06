@@ -17,7 +17,7 @@ function get-status {
 case `get-status` in
     active)
         . "$TMPDIR/gatewayinfo.sh"
-        BRMAC=$(cat /sys/class/net/$BRIF/address)
+        # BRMAC=$(cat /sys/class/net/$BRIF/address)
         INTERFACE=$BRIF
         ;;
     wifi)

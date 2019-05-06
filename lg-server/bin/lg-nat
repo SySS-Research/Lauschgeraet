@@ -2,14 +2,13 @@
 
 BD=$(dirname $0)
 . "$BD/lg-config.sh"
+GATEWAYINFO=$TMPDIR/gatewayinfo.sh
 
 # the sys fs does not behave as you would expect when it comes to
 # network namespaces. see:
 # https://unix.stackexchange.com/questions/457025/switching-into-a-network-namespace-does-not-change-sys-class-net
 MNT=`mktemp -d`
 mount -t sysfs none $MNT
-BRMAC=$(cat $MNT/class/net/$BRIF/address)
-GATEWAYINFO=$TMPDIR/gatewayinfo.sh
 SWMAC=$(cat $MNT/class/net/$SWIF/address)
 umount $MNT
 rmdir $MNT
@@ -30,12 +29,14 @@ case $1 in
             -j SNAT --to $CLIP:$RANGE
         iptables -t nat -A POSTROUTING -o $BRIF -s $ATNET,$WIFINET -p icmp \
             -j SNAT --to $CLIP
-        route add -net $GWIP netmask 255.255.255.255 dev $BRIF
-        route add default gw $GWIP
+        ip route add $GWIP/32 dev $BRIF
+        ip route add default via $GWIP src $ATIP
         arp -s -i "$BRIF" "$GWIP" "$GWMAC"
+        arp -s $CLIP $CLMAC
 
         iptables -t nat -N LG
         iptables -t nat -A PREROUTING -j LG
+
         ;;
     'down')
         arp -d "$GWIP"

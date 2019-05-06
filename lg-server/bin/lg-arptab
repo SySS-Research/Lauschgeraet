@@ -4,7 +4,6 @@ BD=$(dirname $0)
 . "$BD/lg-config.sh"
 mkdir -p $TMPDIR
 . "$TMPDIR/gatewayinfo.sh"
-BRMAC=$(cat /sys/class/net/$BRIF/address)
 
 if [ -z $2 ] ; then
     PREFIX=24

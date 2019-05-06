@@ -36,6 +36,7 @@ py_env = {
     "BRIP": '192.0.2.1',
     "GWIP": '192.0.2.254',  # bogus gateway
     "ATNET": '203.0.113.0/24',
+    "ATIP": '203.0.113.1',
     "WIFINET": '198.51.100.0/24',
     "RANGE": "61000-62000",
     "TMPDIR": os.path.join(
@@ -67,9 +68,9 @@ ns_setup = [
                                py_env["GWIF"]),
     'ip link set %s up' % py_env["GWIF"],
     # Assign an address to the attacker interface
-    'ip netns exec %s ip addr add %s dev %s' % (
+    'ip netns exec %s ip addr add %s/24 dev %s' % (
         LG_NS,
-        py_env["ATNET"].replace('.0/', '.1/'),
+        py_env["ATIP"],
         py_env["ATIF"]),
     'ip netns exec %s ip link set %s up' % (LG_NS, py_env["ATIF"]),
 
@@ -79,8 +80,8 @@ ns_setup = [
 ]
 
 ns_teardown = [
-    'ip link del %s' % py_env["GWIF"],
     'ip netns del %s' % LG_NS,
+    'ip link del %s' % py_env["GWIF"],
     'iptables -t nat -D POSTROUTING -o %s -j MASQUERADE' % py_env["GWIF"],
 ]
 
@@ -88,12 +89,10 @@ ns_teardown = [
 def run_steps(steps, ignore_errors=False):
     for step in steps:
         try:
-            subprocess.check_output(step,
-                                    shell=True,
-                                    stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
+            subprocess.check_output(step.split(),)
+        except subprocess.CalledProcessError:
             if ignore_errors:
-                log.error("%s: %s" % (str(e), e.stdout.decode()))
+                log.exception("Exception while managing network namespaces:")
                 break
             else:
                 raise
@@ -128,33 +127,30 @@ def lg_exec(*args):
             get_script_path(),
             "lg-server",
             "bin",
-            [*args][0],
+            args[0],
         )
-    ] + [*args][1:]
+    ] + list(args[1:])
     my_env = {**os.environ.copy(), **py_env}
-    if LG_NS_MODE:
-        with netns.NetNS(nsname=LG_NS):
+    try:
+        if LG_NS_MODE:
+            with netns.NetNS(nsname=LG_NS):
+                output = subprocess.check_output(cmd,
+                                                 env=my_env,
+                                                 stderr=subprocess.STDOUT)
+        else:
             output = subprocess.check_output(cmd,
                                              env=my_env,
                                              stderr=subprocess.STDOUT)
-    else:
-        output = subprocess.check_output(cmd,
-                                         env=my_env,
-                                         stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        log.exception("Exception while running command: %s" % ' '.join(args))
+        log.error(e.output.decode())
+        return b""
     return output
 
 
 def lg_setup(*args):
-    try:
-        log.info("Setting up the Lauschgerät")
-        o = lg_exec("../lg-setup.sh",)
-    except subprocess.CalledProcessError as e:
-        if sys.version_info > (3, 0):
-            strings = (e.returncode, e.stdout.decode())
-        else:
-            strings = (e.returncode, e.output)
-        log.error("Setup returned with code %d: %s" % strings)
-        return False
+    log.info("Setting up the Lauschgerät")
+    o = lg_exec("../lg-setup.sh",)
     if sys.version_info >= (3, 0):
         log.info("Setup successful: %s" % o.decode())
     else:
@@ -201,10 +197,10 @@ def set_lg_status(mode):
     try:
         out = lg_exec("lg", "set", mode)
     except subprocess.CalledProcessError as e:
-        log.error("Setting mode failed: %s" % e.stdout.decode())
-        return e.stdout.decode()
+        log.exception("Setting mode failed")
+        return str(e)
     except Exception as e:
-        log.error("Setting mode failed: %s" % e)
+        log.exception("Setting mode failed")
         return str(e)
     log.info("Output from 'lg set': %s" % out.decode())
     return None

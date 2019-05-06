@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-from subprocess import Popen, PIPE, check_output
+from subprocess import Popen, PIPE
 import json
 #  from lauschgeraet.args import LG_NS_MODE
 #  from lauschgeraet.lgiface import LG_NS
@@ -116,13 +116,10 @@ class LGService(object):
         args = args.split()
         self.cmd = [self._dict["properties"]["path"]["value"]] + args
         log.info("Executing: %s" % ' '.join(self.cmd))
-        # TODO run in daemon
-        # https://stackoverflow.com/questions/25542110/kill-child-process-if-parent-is-killed-in-python
         self._p = Popen(self.cmd,
                         stdin=PIPE, stdout=PIPE, stderr=PIPE,
                         bufsize=1,
                         close_fds=True)
-        print(self._p.pid)
         self._q = Queue()
         self._t = Process(target=enqueue_output, args=(self._p.stdout,
                                                        self._p.stderr,
@@ -133,7 +130,7 @@ class LGService(object):
     def stop(self):
         # kill thread
         log.info("Killing: %s" % ' '.join(self.cmd))
-        check_output(['kill', '-15', str(self._p.pid)])
+        self._p.terminate()
 
     def running(self):
         try:

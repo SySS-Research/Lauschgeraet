@@ -21,7 +21,7 @@ def ls(path):
 
 def iptables_raw(table, chain=""):
     if ' ' in table or (chain and ' ' in chain):
-        logging.error('Spaces not allowed table or chain name')
+        logging.error('Spaces not allowed in table or chain name')
         return []
     if chain:
         chain = chain + " --line-numbers"
@@ -32,8 +32,8 @@ def iptables_raw(table, chain=""):
                 rules = subprocess.check_output(cmd.split())
         else:
             rules = subprocess.check_output(cmd.split())
-    except Exception as e:
-        log.error(e)
+    except Exception:
+        log.exception("Exception while executing iptables")
         return b""
     return rules
 
@@ -55,7 +55,7 @@ def list_iptables(table, chain):
             if "dpt:" in r["extension"]:
                 r["destination"] = '%s:%s' % (
                         r["destination"],
-                        r["extension"].split("dpt:")[1].split(" ")[0]
+                        r["extension"].split("dpt:")[1].split()[0]
                 )
             if "to:" in r["extension"]:
                 r["extension"] = r["extension"].split("to:")[1]
@@ -66,22 +66,16 @@ def list_iptables(table, chain):
 
 
 def add_iptables_rule(proto, old_dest, old_port, new_dest, new_port):
-    log.info('Adding mitm rule %s %s %s %s' % (
+    log.info('Adding mitm rule %s, %s:%s -> %s:%s' % (
                 proto, old_port, old_dest,
-                new_dest))
-    try:
-        lg_exec(
-            "lg-redirect add %s %s %s %s %s" % (
-                proto,
-                old_dest,
-                old_port,
-                new_dest,
-                new_port,
+                new_dest, new_port))
+    lg_exec("lg-redirect", "add",
+            proto,
+            old_dest,
+            old_port,
+            new_dest,
+            new_port,
             )
-        )
-    except Exception as e:
-        log.error("%s: %s" % (str(e), e.stdout.decode()))
-        return(str(e.stdout.decode()))
     return None
 
 
@@ -97,11 +91,7 @@ def replace_iptables_rule(n, proto, old_dest, old_port, new_dest, new_port):
 
 def delete_iptables_rule(n):
     log.info('Deleting mitm rule %s' % (n))
-    try:
-        lg_exec("lg-redirect del %d" % n)
-    except Exception as e:
-        log.error("%s: %s" % (e, e.stdout.decode()))
-        return(str(e.stdout.decode()))
+    lg_exec("lg-redirect", "del", n)
     return None
 
 
@@ -113,8 +103,8 @@ def get_ip_config():
                 result = subprocess.check_output(cmd.split())
         else:
             result = subprocess.check_output(cmd.split())
-    except Exception as e:
-        logging.error(e)
+    except Exception:
+        log.exception("Exception while getting IP config")
         return ""
     return result.decode()
 
@@ -127,8 +117,8 @@ def get_ip_route():
                 result = subprocess.check_output(cmd.split())
         else:
             result = subprocess.check_output(cmd.split())
-    except Exception as e:
-        logging.error(e)
+    except Exception:
+        log.exception("Exception while getting IP route")
         return ""
     return result.decode()
 
@@ -141,7 +131,7 @@ def get_ss():
                 result = subprocess.check_output(cmd.split())
         else:
             result = subprocess.check_output(cmd.split())
-    except Exception as e:
-        logging.error(e)
+    except Exception:
+        log.exception("Exception while getting netstat")
         return ""
     return result.decode()

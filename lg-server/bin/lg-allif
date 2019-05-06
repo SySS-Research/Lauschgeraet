@@ -7,12 +7,15 @@ set -e
 
 case $1 in
     'up')
-        # Ausgehende ARP Pakete verwerfen
-        arptables -A OUTPUT -o $ATIF -j ACCEPT
-        if [[ ! -z $WIFIIF ]] ; then
-            arptables -A OUTPUT -o $WIFIIF -j ACCEPT
-        fi
-        arptables -P OUTPUT DROP
+        # Ausgehende ARP Pakete verwerfen (blacklist approach)
+        arptables -A OUTPUT -o $SWIF -j DROP
+        arptables -A OUTPUT -o $CLIF -j DROP
+        # whitelist approach
+        # arptables -A OUTPUT -o $ATIF -j ACCEPT
+        # if [[ ! -z $WIFIIF ]] ; then
+        #     arptables -A OUTPUT -o $WIFIIF -j ACCEPT
+        # fi
+        # arptables -P OUTPUT DROP
         # Interfaces starten
         ifconfig $SWIF inet 0.0.0.0 up promisc
         ifconfig $CLIF inet 0.0.0.0 up promisc
@@ -22,8 +25,10 @@ case $1 in
     'down')
         ifconfig $SWIF inet 0.0.0.0 down
         ifconfig $CLIF inet 0.0.0.0 down
-        arptables -P OUTPUT ACCEPT
-        arptables -F OUTPUT
+        # arptables -P OUTPUT ACCEPT
+        # arptables -F OUTPUT
+        arptables -D OUTPUT -o $SWIF -j DROP
+        arptables -D OUTPUT -o $CLIF -j DROP
         exit 0
         ;;
 

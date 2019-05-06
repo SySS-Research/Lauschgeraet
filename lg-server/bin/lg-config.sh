@@ -14,6 +14,7 @@ if [ -z "$LG_ENV_BY_PYTHON" ] ; then
     BRIP='192.0.2.1'
     GWIP='192.0.2.254' # bogus gateway
     ATNET='203.0.113.0/24'
+    ATIP='203.0.113.1'
     WIFINET='198.51.100.0/24'
     RANGE=61000-62000
     TMPDIR="$BD/../.tmp/"

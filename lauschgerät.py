@@ -19,9 +19,11 @@ if __name__ == "__main__":
     if DEPS_MET:
         try:
             import lauschgeraet.flask as lf
-            init_ns()
-            lf.main()
-            teardown_ns()
+            try:
+                init_ns()
+                lf.main()
+            finally:
+                teardown_ns()
         except ImportError as e:
             # Not all dependencies were met after all
             DEPS_MET = False
