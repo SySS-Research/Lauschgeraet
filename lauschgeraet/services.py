@@ -25,10 +25,8 @@ MANDATORY_PROPERTIES = [
 ]
 
 
-def enqueue_output(out, err, queue):
+def enqueue_output(out, queue):
     for line in iter(out.readline, b''):
-        queue.put(line)
-    for line in iter(err.readline, b''):
         queue.put(line)
     out.close()
 
@@ -116,16 +114,19 @@ class LGService(object):
         args = args.split()
         self.cmd = [self._dict["properties"]["path"]["value"]] + args
         log.info("Executing: %s" % ' '.join(self.cmd))
-        self._p = Popen(self.cmd,
+        self._p = Popen(['stdbuf', '-o0'] + self.cmd,
                         stdin=PIPE, stdout=PIPE, stderr=PIPE,
                         bufsize=1,
                         close_fds=True)
         self._q = Queue()
-        self._t = Process(target=enqueue_output, args=(self._p.stdout,
-                                                       self._p.stderr,
-                                                       self._q))
-        self._t.daemon = True  # thread dies with the program
-        self._t.start()
+        self._tout = Process(target=enqueue_output, args=(self._p.stdout,
+                                                          self._q))
+        self._tout.daemon = True  # thread dies with the program
+        self._tout.start()
+        self._terr = Process(target=enqueue_output, args=(self._p.stderr,
+                                                          self._q))
+        self._terr.daemon = True  # thread dies with the program
+        self._terr.start()
 
     def stop(self):
         # kill thread
@@ -139,7 +140,7 @@ class LGService(object):
 
     def running(self):
         try:
-            return self._t.is_alive()
+            return self._tout.is_alive()
         except AttributeError:
             return False
 
@@ -148,7 +149,7 @@ class LGService(object):
             return "<not running>"
         while True:
             try:
-                line = self._q.get_nowait()  # or q.get(timeout=.1)
+                line = self._q.get_nowait(timeout=.1)  # or q.get(timeout=.1)
                 self.output += line.decode()
             except Empty:
                 break
