@@ -84,12 +84,16 @@ def stats():
 
 @app.route('/mitm')
 def mitm():
-    rules = list_iptables('nat', 'LG')
-    context = {
-        **get_lg_status(),
-        "rules": rules,
-        "iptables_raw": iptables_raw('nat').decode()
-    }
+    lg_status = get_lg_status()
+    if lg_status['lgstate']['status'] == 'active':
+        rules = list_iptables('nat', 'LG')
+        context = {
+            **lg_status,
+            "rules": rules,
+            "iptables_raw": iptables_raw('nat').decode()
+        }
+    else:
+        context = lg_status
     return render_template("mitm.html", **context)
 
 

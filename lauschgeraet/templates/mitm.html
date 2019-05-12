@@ -9,7 +9,7 @@ traffic to port 80/tcp from the client to a local HTTP service that strips
 SSL."><span data-feather="help-circle"></span></a>
 {% endblock %}
 
-{% block main %}
+{% block main %} {% if lgstate["active"] %}
     <div class="table-responsive">
       {% include "mitm-table.html" %}
     </div>
@@ -31,4 +31,7 @@ SSL."><span data-feather="help-circle"></span></a>
             <pre><code>{{ iptables_raw }}</code></pre>
         </div>
     </div>
+{% else %}
+    <p>The Lauschgerät's status must be <code>active</code> if you want to redirect traffic.</p>
+{% endif %}
 {% endblock %}
