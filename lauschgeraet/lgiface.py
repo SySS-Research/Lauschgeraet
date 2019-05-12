@@ -110,17 +110,6 @@ def teardown_ns():
         run_steps(ns_teardown, True)
 
 
-def dependencies_met():
-    if TEST:
-        return True
-    # TODO check for actual deps
-    # check for python3
-    if sys.version_info < (3, 0):
-        return False
-    # python modules are checked implicitily via except ImportError
-    return True
-
-
 def lg_exec(*args):
     cmd = [
         os.path.join(
@@ -146,16 +135,6 @@ def lg_exec(*args):
         log.error(e.output.decode())
         return b""
     return output
-
-
-def lg_setup(*args):
-    log.info("Setting up the Lauschgerät")
-    o = lg_exec("../lg-setup.sh",)
-    if sys.version_info >= (3, 0):
-        log.info("Setup successful: %s" % o.decode())
-    else:
-        log.info("Setup successful: %s" % o)
-    return True
 
 
 def get_lg_status():
