@@ -1,0 +1,16 @@
+{
+    "display_name": "SSL Strip",
+    "path": "sslstrip",
+    "description": "A tool for exploiting Moxie Marlinspike's SSL \"stripping\" attack",
+    "source": "https://github.com/moxie0/sslstrip",
+    "install_cmd": "apt install sslstrip",
+    "argstring": "-l %(port)s",
+    "parameters": {
+        "port": {
+            "description": "port",
+            "type": "text",
+            "help": "Port to listen on",
+            "value": "10000"
+        }
+    }
+}
