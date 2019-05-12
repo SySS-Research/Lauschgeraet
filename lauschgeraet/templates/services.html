@@ -22,10 +22,10 @@ which you can divert traffic."><span data-feather="help-circle"></span></a>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
                 {% if service.running() %}
-                <button class="btn btn-sm btn-outline-secondary"
+                <button class="btn btn-sm btn-outline-danger"
                     onclick='stopservice({{loop.index}})'>Stop</button>
                 {% else %}
-                <button class="btn btn-sm btn-outline-secondary"
+                <button class="btn btn-sm btn-outline-success"
                         onclick='startservice({{loop.index}})'>Start</button>
                 {% endif %}
               </div>
