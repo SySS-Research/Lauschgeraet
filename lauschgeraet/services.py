@@ -149,7 +149,7 @@ class LGService(object):
             return "<not running>"
         while True:
             try:
-                line = self._q.get_nowait(timeout=.1)  # or q.get(timeout=.1)
+                line = self._q.get_nowait()  # or q.get(timeout=.1)
                 self.output += line.decode()
             except Empty:
                 break
