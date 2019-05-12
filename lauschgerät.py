@@ -6,7 +6,7 @@ from lauschgeraet.lgiface import dependencies_met, init_ns, teardown_ns
 
 
 logging.basicConfig(
-    handlers=[logging.FileHandler('/var/log/lauschgeraet.log', 'w', 'utf-8')],
+    handlers=[logging.FileHandler('/var/log/lauschgeraet.log', 'a', 'utf-8')],
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
