@@ -128,7 +128,7 @@ function startservice(n) {
             "n": n,
         },
         type: 'POST',
-        success: flash_message,
+        success: function() { location.reload(); }
     });
 };
 
@@ -139,7 +139,7 @@ function stopservice(n) {
             "n": n,
         },
         type: 'POST',
-        success: flash_message,
+        success: function() { location.reload(); }
     });
 };
 
