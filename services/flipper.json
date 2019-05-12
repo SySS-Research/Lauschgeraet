@@ -1,0 +1,22 @@
+{
+    "display_name": "Flipper",
+    "path": "tlseraser",
+    "description": "Flips all images in a website",
+    "source": "https://github.com/AdrianVollmer/tlseraser",
+    "install_cmd": "python3 -m pip install --user tlseraser",
+    "argstring": "-p %(lport)s -l %(lhost)s",
+    "parameters": {
+        "lport": {
+            "description": "LPORT",
+            "type": "text",
+            "help": "The local port to listen on",
+            "value": "1234"
+        },
+        "lhost": {
+            "description": "LHOST",
+            "type": "text",
+            "help": "The local IP address to listen on",
+            "value": "0.0.0.0"
+        }
+    }
+}
