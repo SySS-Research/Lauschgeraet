@@ -21,8 +21,8 @@ else
     if [ -z $WIFIIF ] ; then WIFIIF=none ; fi
 fi
 
-if [[ `cat /etc/issue` != Raspbian* ]] ; then
-    echo "[!] Warning! This setup script is meant for Raspbian only! Things
+if [[ `cat /etc/issue` != Kali* ]] ; then
+    echo "[!] Warning! This setup script is meant for Kali Linux only! Things
     might not work properly and you should do a manual install."
 fi
 
@@ -74,4 +74,3 @@ apt-get remove avahi-daemon || true
 systemctl disable systemd-timesyncd.service || true
 
 echo "[*] Done!"
-echo "[*] You may want to choose a new password for user 'pi' with 'passwd pi' and then reboot."
