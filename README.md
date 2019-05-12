@@ -63,3 +63,16 @@ lg-eth1`. Now switch into the `ext` namespace with something like `sudo ip
 netns exec ext bash`. Pretend to be the victim by placing requests from this
 shell, preferably with `curl` or `wget`, but theoretically you can also
 launch a browser.
+
+Close all shells living in this new network namespace before you delete it.
+
+Author
+======
+
+Adrian Vollmer, SySS GmbH 2018-2019
+
+Disclaimer
+==========
+
+Use at your own risk. Do not use without full consent of everyone involved.
+For educational purposes only.
