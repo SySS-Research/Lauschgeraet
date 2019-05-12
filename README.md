@@ -1,8 +1,17 @@
+Lauschgerät
+===========
+
+Analyze and modify traffic without worrying about TLS or 802.1X.
+
+Lauschgerät attempts to do most of the heavy lifting so you can focus on
+things that cannot be done by a machine. Get an extra ethernet cable, plug
+your machine between two test machines, and watch and control the traffic
+flowing through your machine.
 
 Installation
 ============
 
-The recommended distribution is always Kali (even on ARM).
+The recommended distribution is always Kali Linux (even on ARM).
 
 Variant 1 (namespaces)
 ----------------------
@@ -36,6 +45,28 @@ Then copy the image on a Micro SD card:
 Banana Pi. Put it into a network with a DHCP server, browse to
 http://<IP>:1337 and follow the instructions.
 
+Usage
+=====
+
+Quickstart
+----------
+
+1. Attach the victim client and the victim switch to the Lauschgerät.
+2. Run `lauschgerät.py <client-interface> <switch-interface>`
+3. Navigate a browser to the attacker machine on port 1337
+4. Set the status of the Lauschgerät to `passive`
+5. Watch the traffic with `ip netns exec lg tcpdump -i br0`, or remotely
+   with Wireshark: `ssh root@kali ip netns exec lg tcpdump -s 0 -U -n -w - -i br0 | wireshark -k -i -`
+6. To redirect traffic to another service, set the status of the Lauschgerät
+   to `active`
+7. Run a service on the target port using the "Services" page
+7. Define an `iptables` rule on the "Man in the Middle" page that redirects
+   traffic to that target port
+
+Examples
+--------
+
+### TLS Eraser
 
 Testing
 =======
