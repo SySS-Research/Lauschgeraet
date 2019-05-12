@@ -132,6 +132,11 @@ class LGService(object):
         log.info("Killing: %s" % ' '.join(self.cmd))
         self._p.terminate()
 
+    def pid(self):
+        if self.running():
+            return "%d" % self._p.pid
+        return ""
+
     def running(self):
         try:
             return self._t.is_alive()

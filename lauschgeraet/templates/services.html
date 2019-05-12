@@ -13,16 +13,21 @@ which you can divert traffic."><span data-feather="help-circle"></span></a>
     <div class="service card" id="service-{{loop.index}}" data-id='{{loop.index}}'>
         <div class="service-header card-header d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 border-bottom" id="service-header-{{loop.index}}">
             <h3 class="h3">
+                {{service.properties.display_name.value}}
                 {% if service.running() %}
-                    <span class="badge badge-success">Success</span>
+                    <span class="badge badge-success">running
+                        ({{service.pid()}})</span>
                 {% endif %}
-                {{service.properties.display_name.value}}</h3>
+                </h3>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
-                <button class="btn btn-sm btn-outline-secondary"
-                        onclick='startservice({{loop.index}})'>Start</button>
+                {% if service.running() %}
                 <button class="btn btn-sm btn-outline-secondary"
                     onclick='stopservice({{loop.index}})'>Stop</button>
+                {% else %}
+                <button class="btn btn-sm btn-outline-secondary"
+                        onclick='startservice({{loop.index}})'>Start</button>
+                {% endif %}
               </div>
               <div class="btn-group mr-2">
                 <button class="btn btn-sm btn-outline-secondary show-service-output"
