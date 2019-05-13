@@ -86,9 +86,9 @@ we're already working on. The trick is to use yet another network namespace.
 The script `testsetup.sh` creates a network namespace with the name `ext` as
 well as four virtual devices:
 
-* `lg-eth0` - replaces the the interface on the attacker machine connect
+* `lg-eth0` - replaces the the interface on the attacker machine connected
   to the client
-* `lg-eth1` - replaces the the interface on the attacker machine connect
+* `lg-eth1` - replaces the the interface on the attacker machine connected
   to the switch
 * `lg-eth0-l` - replaces the interface of the victim client
 * `lg-eth1-l` - replaces the interface of the victim switch
