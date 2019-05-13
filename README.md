@@ -44,8 +44,9 @@ Usage
 Quickstart
 ----------
 
-1. Attach the victim client and the victim switch to the Lauschgerät.
-2. Run `lauschgerät.py <client-interface> <switch-interface>`
+1. Attach the victim client and the victim switch to the Lauschgerät
+2. If using variant 1 (network namespaces), run `lauschgerät.py
+   <client-interface> <switch-interface>`
 3. Navigate a browser to the attacker machine on port 1337
 4. Set the status of the Lauschgerät to `passive`
 5. Watch the traffic with `ip netns exec lg tcpdump -i br0`, or remotely
@@ -73,8 +74,9 @@ Testing
 =======
 
 If you want to contribute, it's useful to have a good test setup. Since it's
-a pain to work with another physical device, let's just use the same machine
-we're already working on. The trick is to use yet another network namespace.
+a pain to work with another physical device, let alone two more devices,
+let's just use the same machine we're already working on (variant 1). The
+trick is to use yet another network namespace.
 
 The script `testsetup.sh` creates a network namespace with the name `ext` as
 well as four virtual devices:
@@ -93,8 +95,7 @@ default network namespace.
 To run a test, execute `./testsetup.sh ; ./lauschgerät.py -ci lg-eth0 -si
 lg-eth1`. Now switch into the `ext` namespace with something like `sudo ip
 netns exec ext bash`. Pretend to be the victim by placing requests from this
-shell, preferably with `curl` or `wget`, but theoretically you can also
-launch a browser.
+shell, preferably with `curl` or `wget`, but you can also launch a browser.
 
 Close all shells living in this new network namespace before you delete it.
 
