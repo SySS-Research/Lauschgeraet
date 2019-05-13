@@ -33,17 +33,10 @@ Variant 3 (hardware)
 --------------------
 
 Download a suitable [Kali Linux image for
-ARM](https://www.offensive-security.com/kali-linux-arm-images/) and run:
+ARM](https://www.offensive-security.com/kali-linux-arm-images/), install it
+on a Raspberry Pi, Banana Pi or some other compatible device, make sure you
+got root access via SSH, and proceed as in variant 2.
 
-    install.sh <PATH-TO-IMAGE>
-
-Then copy the image on a Micro SD card:
-
-    cp <PATH-TO-IMAGE> /dev/mmcblk0
-
-(or whatever your device is named) and plug it into the Raspberry Pi or
-Banana Pi. Put it into a network with a DHCP server, browse to
-http://<IP>:1337 and follow the instructions.
 
 Usage
 =====
