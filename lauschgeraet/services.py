@@ -3,8 +3,9 @@ import os
 import sys
 from subprocess import Popen, PIPE
 import json
+import netns
 #  from lauschgeraet.args import LG_NS_MODE
-#  from lauschgeraet.lgiface import LG_NS
+from lauschgeraet.lgiface import LG_NS
 from multiprocessing import Process, Queue
 from queue import Empty
 
@@ -26,8 +27,11 @@ MANDATORY_PROPERTIES = [
 
 
 def enqueue_output(out, queue):
-    for line in iter(out.readline, b''):
-        queue.put(line)
+    try:
+        for line in iter(out.readline, b''):
+            queue.put(line)
+    except KeyboardInterrupt:
+        pass
     out.close()
 
 
@@ -114,10 +118,11 @@ class LGService(object):
         args = args.split()
         self.cmd = [self._dict["properties"]["path"]["value"]] + args
         log.info("Executing: %s" % ' '.join(self.cmd))
-        self._p = Popen(['stdbuf', '-o0'] + self.cmd,
-                        stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                        bufsize=1,
-                        close_fds=True)
+        with netns.NetNS(nsname=LG_NS):
+            self._p = Popen(['stdbuf', '-o0'] + self.cmd,
+                            stdin=PIPE, stdout=PIPE, stderr=PIPE,
+                            bufsize=1,
+                            close_fds=True)
         self._q = Queue()
         self._tout = Process(target=enqueue_output, args=(self._p.stdout,
                                                           self._q))
