@@ -72,7 +72,7 @@ Examples
 
 Run the Flipper service (analogous to TLS Eraser) to flip images:
 
-![Flipper](https://github.com/SySS-Research/Lauschgeraet/master/doc/img/blackhat-flipped.png)
+![Flipper](https://github.com/SySS-Research/Lauschgeraet/blob/master/doc/img/blackhat-flipped.png)
 
 Shout out to byt3bl33d3r!
 
