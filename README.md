@@ -80,7 +80,7 @@ Testing
 =======
 
 If you want to contribute, it's useful to have a good test setup. Since it's
-a pain to work with another physical device, let's just the same machine
+a pain to work with another physical device, let's just use the same machine
 we're already working on. The trick is to use yet another network namespace.
 
 The script `testsetup.sh` creates a network namespace with the name `ext` as
