@@ -3,12 +3,12 @@ Description=SySS Lauschgerät
 After=syslog.target
 
 [Service]
-Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/lg/lg-server/bin"
 Type=simple
 User=root
 Group=root
 WorkingDirectory=/root
-ExecStart=/usr/sbin/lauschgeraetd
+ExecStart=/usr/sbin/lauschgerät.py %CLIF% %SWIF%
 SyslogIdentifier=lauschgerät
 StandardOutput=syslog
 StandardError=syslog

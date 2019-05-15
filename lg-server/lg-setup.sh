@@ -35,8 +35,19 @@ apt-get -y dist-upgrade
 cat "$rootdir/../requirements-system.txt" | xargs sudo apt-get -y install
 pip3 install --user -r "$rootdir/../requirements.txt"
 
+
+echo "[*] Installing Lauschgerät..."
+
+TARBALL=/root/lg.tar.gz
+cd /root
+tar xf "$TARBALL"
+cp /root/lg/lauschgerät.py /usr/sbin
+systemctl enable lauschgeraet
+rm -f "$TARBALL"
+
 echo "[*] Copying config files..."
 
+cp $rootdir/lauschgeraet.service /lib/systemd/system/
 cp $rootdir/conf/motd /etc/motd
 cp $rootdir/conf/dnsmasq.conf /etc/dnsmasq.conf
 cp $rootdir/conf/interfaces.atif /etc/network/interfaces.d/lauschgeraet.atif
@@ -51,8 +62,8 @@ for file in $rootdir/bin/* ; do
 done
 
 sed -i "s/%ATIF%/$ATIF/g" /etc/dnsmasq.conf /etc/network/interfaces.d/lauschgeraet.atif $rootdir/bin/lg-config.sh
-sed -i "s/%CLIF%/$CLIF/g" $rootdir/bin/lg-config.sh
-sed -i "s/%SWIF%/$SWIF/g" $rootdir/bin/lg-config.sh
+sed -i "s/%CLIF%/$CLIF/g" $rootdir/bin/lg-config.sh /lib/systemd/system/lauschgeraet.service
+sed -i "s/%SWIF%/$SWIF/g" $rootdir/bin/lg-config.sh /lib/systemd/system/lauschgeraet.service
 
 
 if [[ $WIFIIF != none ]] ; then
