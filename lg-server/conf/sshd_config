@@ -12,8 +12,8 @@
 
 #Port 22
 #AddressFamily any
-ListenAddress 203.0.113.37
-ListenAddress 198.51.100.1
+#ListenAddress 203.0.113.37
+#ListenAddress 198.51.100.1
 #ListenAddress ::
 
 #HostKey /etc/ssh/ssh_host_rsa_key

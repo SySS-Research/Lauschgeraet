@@ -11,7 +11,8 @@ flowing through your machine.
 Installation
 ============
 
-The recommended distribution is always Kali Linux (even on ARM).
+The recommended distribution is always Kali Linux (even on ARM). A minimal
+network install with just an SSH server and standard Linux tools will do.
 
 Variant 1 (namespaces)
 ----------------------
@@ -24,8 +25,8 @@ Install the requirements:
 Variant 2 (virtual machine)
 ---------------------------
 
-Make sure the virtual machine is exposing an SSH service and root is allowed
-to log in via SSH. Then run:
+Make sure the virtual machine is exposing an SSH service, has access to the
+internet and root is allowed to log in via SSH. Then run:
 
     install.sh root@<HOST> <PORT>
 
@@ -35,8 +36,10 @@ Variant 3 (hardware)
 Download a suitable [Kali Linux image for
 ARM](https://www.offensive-security.com/kali-linux-arm-images/), install it
 on a Raspberry Pi, Banana Pi or some other compatible device, make sure you
-got root access via SSH, and proceed as in variant 2.
+got root access via SSH and that the device has internet access, and proceed
+as in variant 2.
 
+This is a good moment to get coffee, because this step may take a while.
 
 Usage
 =====
@@ -45,7 +48,7 @@ Quickstart
 ----------
 
 1. Attach the victim client and the victim switch to the Lauschgerät
-2. If using variant 1 (network namespaces), run `lauschgerät.py
+2. If using variant 1 (network namespaces), run `lauschgeraet.py
    <client-interface> <switch-interface>`
 3. Navigate a browser to the attacker machine on port 1337
 4. Set the status of the Lauschgerät to `passive`
@@ -92,7 +95,7 @@ well as four virtual devices:
 needs to be a DHCP service listening on `lg-eth1-l`. It can be in the
 default network namespace.
 
-To run a test, execute `./testsetup.sh ; ./lauschgerät.py -ci lg-eth0 -si
+To run a test, execute `./testsetup.sh ; ./lauschgeraet.py -ci lg-eth0 -si
 lg-eth1`. Now switch into the `ext` namespace with something like `sudo ip
 netns exec ext bash`. Pretend to be the victim by placing requests from this
 shell, preferably with `curl` or `wget`, but you can also launch a browser.
