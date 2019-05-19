@@ -1,10 +1,11 @@
 {
     "display_name": "Flipper",
-    "path": "flipper.py",
-    "description": "Flip all images in a website",
+    "path": "/opt/tlseraser/example.py",
+    "description": "Flip images transferred via HTTP",
     "source": "https://github.com/AdrianVollmer/tlseraser",
-    "install_cmd": "python3 -m pip install --user tlseraser",
-    "argstring": "-p %(lport)s -l %(lhost)s -n %(netns)s",
+    "install_cmd": "git clone https://github.com/AdrianVollmer/tlseraser.git /opt/tlseraser",
+    "update_cmd": "git -C /opt/tlseraser pull",
+    "argstring": "-f flipper -p %(lport)s -l %(lhost)s -n %(netns)s",
     "parameters": {
         "lport": {
             "description": "LPORT",

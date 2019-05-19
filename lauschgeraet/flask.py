@@ -137,6 +137,24 @@ def service_output():
     return render_template("service-log.html", OUTPUT=output)
 
 
+@app.route('/service', methods=["POST"])
+def serice_action():
+    n = int(request.form["n"])-1
+    action = request.form["action"]
+    if action == 'install':
+        SERVICES[n].install()
+    elif action == 'update':
+        SERVICES[n].update()
+    elif action == 'updateargs':
+        pass  # TODO
+    elif action == 'editjson':
+        pass  # TODO
+    else:
+        log.error("Unknown action: %s" % action)
+        flash("Unknown action: %s" % action, "danger")
+    return render_template("messages.html")
+
+
 @app.route('/shell')
 def shell():
     context = {**get_lg_status(), }

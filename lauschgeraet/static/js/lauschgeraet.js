@@ -147,3 +147,20 @@ $("#service-output-modal").on("show.bs.modal", function(e) {
     var link = $(e.relatedTarget);
     $(this).find(".modal-body").load(link.attr("href"));
 });
+
+
+
+$(".service-form .btn-group .btn").click(function(){
+    var n = $(this).closest('.service-form').attr('data-n');
+    var action = $(this).attr('data-action');
+    // TODO insert spinner
+    $.ajax({
+        url: '/service',
+        data: {
+            "n": n,
+            "action": action,
+        },
+        type: 'POST',
+        success: function() { location.reload(); }
+    });
+});

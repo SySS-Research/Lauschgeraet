@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-from subprocess import Popen, PIPE
+import subprocess
 import json
+import shutil
 import netns
 #  from lauschgeraet.args import LG_NS_MODE
 from lauschgeraet.lgiface import LG_NS
@@ -105,6 +106,24 @@ class LGService(object):
                         " arguments. Example: '-p %(port) -h %(host)'",
                 "value": d["argstring"],
             },
+            "install_cmd": {
+                "description": "Install Command",
+                "type": "text",
+                "help": "This command installs the actual executable ",
+                "value": d["install_cmd"],
+            },
+            "update_cmd": {
+                "description": "Update Command",
+                "type": "text",
+                "help": "This command updates the actual executable ",
+                "value": d["update_cmd"],
+            },
+            "source": {
+                "description": "Source",
+                "type": "text",
+                "help": "Where to get the executable",
+                "value": d["source"],
+            },
         }
 
     def start(self):
@@ -119,10 +138,12 @@ class LGService(object):
         self.cmd = [self._dict["properties"]["path"]["value"]] + args
         log.info("Executing: %s" % ' '.join(self.cmd))
         with netns.NetNS(nsname=LG_NS):
-            self._p = Popen(['stdbuf', '-o0'] + self.cmd,
-                            stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                            bufsize=1,
-                            close_fds=True)
+            self._p = subprocess.Popen(['stdbuf', '-o0'] + self.cmd,
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE,
+                                       bufsize=1,
+                                       close_fds=True)
         self._q = Queue()
         self._tout = Process(target=enqueue_output, args=(self._p.stdout,
                                                           self._q))
@@ -170,6 +191,27 @@ class LGService(object):
 
     def __getitem__(self, key):
         return self._dict[key]
+
+    def is_installed(self):
+        return shutil.which(self["properties"]["path"]["value"]) is not None
+
+    def install(self):
+        cmd = self["properties"]["install_cmd"]["value"].split()
+        try:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            log.exception("Exception while running command: %s" %
+                          ' '.join(cmd))
+            log.error(e.output.decode())
+
+    def update(self):
+        cmd = self["properties"]["update_cmd"]["value"].split()
+        try:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            log.exception("Exception while running command: %s" %
+                          ' '.join(cmd))
+            log.error(e.output.decode())
 
 
 SERVICES = [LGService(s) for s in list_installed_services()]

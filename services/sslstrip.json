@@ -4,6 +4,7 @@
     "description": "A tool for exploiting Moxie Marlinspike's SSL \"stripping\" attack",
     "source": "https://github.com/moxie0/sslstrip",
     "install_cmd": "apt install sslstrip",
+    "update_cmd": "apt install sslstrip",
     "argstring": "-l %(port)s",
     "parameters": {
         "port": {

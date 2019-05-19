@@ -1,9 +1,10 @@
 {
     "display_name": "TLS Eraser",
-    "path": "tlseraser",
+    "path": "/opt/tlseraser/example.py",
     "description": "Terminate TLS connections and eavesdrop on the communication",
     "source": "https://github.com/AdrianVollmer/tlseraser",
-    "install_cmd": "python3 -m pip install --user tlseraser",
+    "install_cmd": "git clone https://github.com/AdrianVollmer/tlseraser.git /opt/tlseraser",
+    "update_cmd": "git -C /opt/tlseraser pull",
     "argstring": "-p %(lport)s -l %(lhost)s -n %(netns)s",
     "parameters": {
         "lport": {
