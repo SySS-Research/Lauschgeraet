@@ -73,6 +73,16 @@ Run the Flipper service (analogous to TLS Eraser) to flip images:
 
 Shout out to byt3bl33d3r!
 
+### Hidden Services
+
+In case you want to run a service that is accessible to other members of the
+network, define a MitM rule such as this:
+
+```
+old destination                       new destination
+<IP of the victim client>:80    ->    203.0.113.1:80
+```
+
 Testing
 =======
 
