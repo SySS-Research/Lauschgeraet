@@ -80,12 +80,6 @@ ns_setup = [
     # Arrange to masquerade outbound packets from the network
     # namespace.
     'iptables -t nat -A POSTROUTING -o %s -j MASQUERADE' % py_env["GWIF"],
-
-    # set kernel flags
-    'modprobe br_netfilter',
-    'sysctl net.ipv4.ip_forward=1',
-    'sysctl net.bridge.bridge-nf-call-iptables=1',
-    'sysctl net.ipv6.conf.all.disable_ipv6=1',
 ]
 
 ns_teardown = [
