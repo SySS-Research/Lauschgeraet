@@ -19,6 +19,7 @@ case $1 in
         ip link set dev $BRIF address $SWMAC
         iptables -t filter -A OUTPUT -s $BRIP -j DROP
         echo 8 > $MNT/class/net/$BRIF/bridge/group_fwd_mask
+        echo 1 > /proc/sys/net/ipv4/ip_forward
         umount $MNT
         rmdir $MNT
         exit 0
