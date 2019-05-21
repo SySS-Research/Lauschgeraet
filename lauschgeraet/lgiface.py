@@ -74,6 +74,9 @@ ns_setup = [
         py_env["ATIF"]),
     'ip netns exec %s ip link set %s up' % (LG_NS, py_env["ATIF"]),
 
+    # Set loopback up
+    'ip netns exec %s ip link set lo up',
+
     # Arrange to masquerade outbound packets from the network
     # namespace.
     'iptables -t nat -A POSTROUTING -o %s -j MASQUERADE' % py_env["GWIF"],
