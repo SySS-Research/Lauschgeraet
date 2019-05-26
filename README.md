@@ -28,7 +28,10 @@ Variant 2 (virtual machine)
 Make sure the virtual machine is exposing an SSH service, has access to the
 internet and root is allowed to log in via SSH. Then run:
 
-    install.sh root@<HOST> <PORT>
+    install.sh -u=root -p=<PORT> <HOST> <ATIF> <CLIF> <SWIF>
+
+The arguments correspond to the attacker interface, the client interface and
+the switch interface.
 
 Variant 3 (hardware)
 --------------------
@@ -41,6 +44,11 @@ as in variant 2.
 
 This is a good moment to get coffee, because this step may take a while.
 
+It should then look like this:
+
+![Lauschgerät on a RasPi](https://github.com/SySS-Research/Lauschgeraet/blob/master/doc/img/setup.jpg)
+
+
 Usage
 =====
 
@@ -51,7 +59,8 @@ Quickstart
 2. If using variant 1 (network namespaces), run `lauschgeraet.py
    <client-interface> <switch-interface>`
 3. Navigate a browser to the attacker machine on port 1337
-4. Set the status of the Lauschgerät to `passive`
+4. Set the status of the Lauschgerät to `passive` by clicking the On/Off
+   switch
 5. Watch the traffic with `ip netns exec lg tcpdump -i br0`, or remotely
    with Wireshark: `ssh root@kali ip netns exec lg tcpdump -s 0 -U -n -w - -i br0 | wireshark -k -i -`
 6. To redirect traffic to another service, set the status of the Lauschgerät
@@ -60,10 +69,36 @@ Quickstart
 7. Define an `iptables` rule on the "Man in the Middle" page that redirects
    traffic to that target port
 
+Services
+--------
+
+You can run arbitray services on the Lauschgerät to interact with your
+victim's traffic. Currently, you need to supply a JSON file with some basic
+info in order to conviently run these services from the web interface. A
+proper API is planned for the next release. You're always free to start any
+service manually via SSH, of course.
+
+A few examples are listed in the following section.
+
+By default, Lauschgerät comes with JSON files for Moxie Marlinspike's
+SSLstrip, a self-developed TCP proxy called TLS Eraser and, as an example
+for how an adversary could maliciously modify traffic, Flipper, a service
+that turns images transferred via HTTP upside-down.
+
 Examples
 --------
 
 ### TLS Eraser
+
+By default, [TLS Eraser](https://github.com/AdrianVollmer/tlseraser) runs on
+TCP port 1234. It terminates the TLS encryption and redirects the traffic to
+another network namespace before transmitting it to its original
+destination. The original destination is determined automatically. The
+detour to another namespace is made so you can observe the unencrypted
+traffic via Wireshark or tcpdump.
+
+The certificate which is presented to the victim is obtained via
+[clone-cert.sh](https://github.com/SySS-Research/clone-cert).
 
 ### Flipper
 
@@ -82,6 +117,15 @@ network, define a MitM rule such as this:
 old destination                       new destination
 <IP of the victim client>:80    ->    203.0.113.1:80
 ```
+
+Wifi Mode
+=========
+
+When running the Lauschgerät as variant 3 with dedicated hardware such as a
+Raspberry Pi, you can use the built-in wifi card either as a management
+interface or as another client interface. Simply turn on the Lauschgerät's
+wifi mode in the web interface. Then all traffic originating from wireless
+devices which joined the wifi network will be intercepted.
 
 Testing
 =======
