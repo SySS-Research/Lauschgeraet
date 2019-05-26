@@ -75,7 +75,7 @@ ns_setup = [
     'ip netns exec %s ip link set %s up' % (LG_NS, py_env["ATIF"]),
 
     # Set loopback up
-    'ip netns exec %s ip link set lo up',
+    'ip netns exec %s ip link set lo up' % LG_NS,
 
     # Arrange to masquerade outbound packets from the network
     # namespace.
