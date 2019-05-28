@@ -156,6 +156,13 @@ shell, preferably with `curl` or `wget`, but you can also launch a browser.
 
 Close all shells living in this new network namespace before you delete it.
 
+References
+==========
+
+Large parts of the 802.1x bypass have been taken from [Alva Duckwall's
+excellent
+talk](https://www.defcon.org/images/defcon-19/dc-19-presentations/Duckwall/DEFCON-19-Duckwall-Bridge-Too-Far.pdf).
+
 Author
 ======
 
