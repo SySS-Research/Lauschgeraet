@@ -39,8 +39,32 @@ Variant 3 (hardware)
 Download a suitable [Kali Linux image for
 ARM](https://www.offensive-security.com/kali-linux-arm-images/), install it
 on a Raspberry Pi, Banana Pi or some other compatible device, make sure you
-got root access via SSH and that the device has internet access, and proceed
-as in variant 2.
+got root access via SSH and that the device has internet access.
+
+I recommend mounting the iso first with guestfish to enable SSH:
+
+```
+$ guestfish -a kali-linux-2019.2-rpi3-nexmon-64.img
+
+Welcome to guestfish, the guest filesystem shell for
+editing virtual machine filesystems and disk images.
+
+Type: ‘help’ for help on commands
+      ‘man’ to read the manual
+      ‘quit’ to quit the shell
+
+><fs> run
+><fs> mount /dev/sda2 /
+```
+
+Then create a symlink to enable the SSH service at boot:
+
+```
+ln-s /lib/systemd/system/ssh.service /etc/systemd/system/sshd.service
+```
+
+Then `umount /`, `sync` and `exit`. Copy it to an SD card, boot the Raspberry
+Pi and proceed as in variant 2.
 
 This is a good moment to get coffee, because this step may take a while.
 
