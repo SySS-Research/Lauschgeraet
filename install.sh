@@ -128,7 +128,7 @@ if [ ! $decision = y ] ; then
     exit 0
 fi
 
-ssh-copy-id -p "$PORT" "$SSHUSER@$SERVER"
+ssh-copy-id -p "$PORT" "$SSHUSER@$SERVER" || true
 scp -P "$PORT" "$TARBALL" "$SSHUSER@$SERVER:/root"
 ssh -p "$PORT" "$SSHUSER@$SERVER" "mkdir -p /root/lg ; cd /root/lg ; \
     tar xf ../lg.tar.gz ; \
