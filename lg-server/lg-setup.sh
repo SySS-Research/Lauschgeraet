@@ -27,6 +27,10 @@ if [[ `cat /etc/issue` != Kali* ]] ; then
     echo "    Things might not work properly and you should do a manual install."
 fi
 
+if [[ $WIFIIF != none ]] ; then
+    DCHP=YES
+fi
+
 rootdir=`dirname $0`
 
 echo "[*] Installing dependencies..."
@@ -45,11 +49,9 @@ cp $rootdir/conf/sysctl.conf /etc/sysctl.conf
 cp $rootdir/conf/modules /etc/modules
 cp $rootdir/conf/lauschgeraet.profile /etc/profile.d/
 
-if [ $DHCP = YES -o $WIFIIF != none ] ; then
-    cp $rootdir/conf/dnsmasq.conf /etc/dnsmasq.conf
-fi
 
 if [[ $DHCP = YES ]] ; then
+    cp $rootdir/conf/dnsmasq.conf /etc/dnsmasq.conf
     cp $rootdir/conf/sshd_config /etc/ssh/sshd_config
     cp $rootdir/conf/interfaces.atif /etc/network/interfaces.d/lauschgeraet.atif
     sed -i "s/^#ATDHCP#//" /etc/dnsmasq.conf
@@ -73,13 +75,12 @@ fi
 
 echo "[*] Configuring services..."
 
-update-rc.d ssh defaults
-if [ $DHCP = YES -o $WIFIIF != none ] ; then
-    update-rc.d dnsmasq defaults
-    update-rc.d networking defaults
-fi
-if [ $DHCP = YES -a $WIFIIF != none ] ; then
-    update-rc.d dhcpcd remove
+systemctl enable ssh
+
+if [ $DHCP = YES ] ; then
+    systemctl enable dnsmasq
+    systemctl enable networking
+    systemctl disable dhcpcd
 fi
 
 sleep 1
@@ -87,5 +88,8 @@ sleep 1
 systemctl enable lauschgeraet
 apt-get remove avahi-daemon || true
 systemctl disable systemd-timesyncd.service || true
+
+echo 1 | update-alternatives --config iptables
+echo 1 | update-alternatives --config arptables
 
 echo "[*] Done! Reboot now."
