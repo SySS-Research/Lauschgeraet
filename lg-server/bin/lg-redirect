@@ -59,8 +59,8 @@ case $1 in
         iptables -t nat -L LG -n -v --line-numbers
 		;;
     'del')
-		if [[ $# -lt 3 ]] ; then usage ; exit 1 ; fi
 		number="$2"
+		if [[ -z "$number" ]] ; then usage ; exit 1 ; fi
         iptables -t nat -D LG "$number"
         ;;
     *)
