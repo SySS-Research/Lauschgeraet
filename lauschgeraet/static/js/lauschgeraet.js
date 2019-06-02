@@ -144,12 +144,14 @@ function stopservice(n) {
 };
 
 $("#service-output-modal").on("show.bs.modal", function(e) {
-    var link = $(e.relatedTarget);
-    $(this).find(".modal-body").load(link.attr("href"));
+    var link = $(e.relatedTarget).attr("href");
+    $(this).find(".modal-body").attr('data-href', link);
+    $(this).find(".modal-body").load(link);
 });
 
 
 
+// this is for installing or updating services
 $(".service-form .btn-group .btn").click(function(){
     var n = $(this).closest('.service-form').attr('data-n');
     var action = $(this).attr('data-action');
@@ -163,4 +165,15 @@ $(".service-form .btn-group .btn").click(function(){
         type: 'POST',
         success: function() { location.reload(); }
     });
+});
+
+$('#service-output-modal .service-reload').click(function(){
+    var objDiv = $(this).closest(".modal-content").find(".modal-body");
+    var link = objDiv.attr('data-href');
+    $(this).find(".modal-body").load(link);
+});
+
+$('#service-output-modal .service-scroll-down').click(function(){
+    var objDiv = $(this).closest(".modal-content").find(".modal-body");
+    objDiv.scrollTop(objDiv[0].scrollHeight);
 });
