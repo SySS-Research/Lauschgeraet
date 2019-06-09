@@ -34,9 +34,11 @@ Variant 2 (virtual machine)
   that shows up in the output of `ip link`
 * Now plug in the client interface and write down the name of the new device
 * Run: `install.sh -u=root -p=<PORT> <HOST> <ATIF> <CLIF> <SWIF>`
+  The arguments correspond to the attacker interface, the client interface
+  and the switch interface.
+* If something goes wrong, log in and try to fix it, then run the command
+  again
 
-The arguments correspond to the attacker interface, the client interface and
-the switch interface.
 
 Variant 3 (hardware)
 --------------------
@@ -84,19 +86,19 @@ Usage
 Quickstart
 ----------
 
-1. Attach the victim client and the victim switch to the Lauschgerät
-2. If using variant 1 (network namespaces), run `lauschgeraet.py
-   <client-interface> <switch-interface>`
-3. Navigate a browser to the attacker machine on port 1337
-4. Set the status of the Lauschgerät to `passive` by clicking the On/Off
-   switch
-5. Watch the traffic with `ip netns exec lg tcpdump -i br0`, or remotely
-   with Wireshark: `ssh root@kali ip netns exec lg tcpdump -s 0 -U -n -w - -i br0 | wireshark -k -i -`
-6. To redirect traffic to another service, set the status of the Lauschgerät
-   to `active`
-7. Run a service on the target port using the "Services" page
-7. Define an `iptables` rule on the "Man in the Middle" page that redirects
-   traffic to that target port
+* Attach the victim client and the victim switch to the Lauschgerät
+* If using variant 1 (network namespaces), run `lauschgeraet.py
+  <client-interface> <switch-interface>`
+* Navigate a browser to the attacker machine on port 1337
+* Set the status of the Lauschgerät to `passive` by clicking the On/Off
+  switch
+* Watch the traffic with `ip netns exec lg tcpdump -i br0`, or remotely
+  with Wireshark: `ssh root@kali ip netns exec lg tcpdump -s 0 -U -n -w - -i br0 | wireshark -k -i -`
+* To redirect traffic to another service, set the status of the Lauschgerät
+  to `active`
+* Run a service on the target port using the "Services" page
+* Define an `iptables` rule on the "Man in the Middle" page that redirects
+  traffic to that target port
 
 Services
 --------
@@ -113,6 +115,9 @@ By default, Lauschgerät comes with JSON files for Moxie Marlinspike's
 SSLstrip, a self-developed TCP proxy called TLS Eraser and, as an example
 for how an adversary could maliciously modify traffic, Flipper, a service
 that turns images transferred via HTTP upside-down.
+
+The Lauschgerät has the IP address 203.0.113.1 in `lg` network namespace and
+203.0.113.2 in the default network namespace.
 
 Examples
 --------
