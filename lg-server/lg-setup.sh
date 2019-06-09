@@ -72,7 +72,8 @@ if [[ $WIFIIF != none ]] ; then
     sed -i "s/%WIFIIF%/$WIFIIF/g" /etc/hostapd/hostapd.conf /etc/dnsmasq.conf /etc/network/interfaces.d/lauschgeraet.wifi $rootdir/bin/lg-config.sh
     sed -i "s/^#WIFI#//" /etc/dnsmasq.conf $rootdir/bin/lg-config.sh
     sed -i "s/^wpa_passphrase=.*\$/wpa_passphrase=$wifipw/" /etc/hostapd/hostapd.conf
-    update-rc.d hostapd defaults
+    systemctl unmask hostapd
+    systemctl enable hostapd
 fi
 
 echo "[*] Configuring services..."
@@ -82,13 +83,11 @@ systemctl enable ssh
 if [ $DHCP = YES ] ; then
     systemctl enable dnsmasq
     systemctl enable networking
-    systemctl disable dhcpcd
 fi
 
 sleep 1
 
 systemctl enable lauschgeraet
-apt-get remove avahi-daemon || true
 systemctl disable systemd-timesyncd.service || true
 
 echo 1 | update-alternatives --config iptables
