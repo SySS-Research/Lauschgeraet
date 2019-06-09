@@ -36,7 +36,8 @@ rootdir=`dirname $0`
 echo "[*] Installing dependencies..."
 
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
+apt-get -yq remove network-manager xfce4
+apt-get -yq autoremove
 apt-get -yq dist-upgrade
 cat "$rootdir/../requirements-system.txt" | xargs apt-get -yq install
 pip3 install --user -r "$rootdir/../requirements.txt"
