@@ -25,10 +25,15 @@ Install the requirements:
 Variant 2 (virtual machine)
 ---------------------------
 
-Make sure the virtual machine is exposing an SSH service, has access to the
-internet and root is allowed to log in via SSH. Then run:
-
-    install.sh -u=root -p=<PORT> <HOST> <ATIF> <CLIF> <SWIF>
+* Create a virtual machine with a network interface you can reach from your host machine (host-only if using KVM) and set up an SSH service
+* Boot the device before plugging in any extra network interfaces
+* Log in and make sure you can reach the internet
+* Use `ntpdate` to set the correct time, if necessary.
+* Write down the name of the wireless interface, if there is any
+* Now plug in the switch interface and write down the name of the new device
+  that shows up in the output of `ip link`
+* Now plug in the client interface and write down the name of the new device
+* Run: `install.sh -u=root -p=<PORT> <HOST> <ATIF> <CLIF> <SWIF>`
 
 The arguments correspond to the attacker interface, the client interface and
 the switch interface.
@@ -38,10 +43,10 @@ Variant 3 (hardware)
 
 Download a suitable [Kali Linux image for
 ARM](https://www.offensive-security.com/kali-linux-arm-images/), install it
-on a Raspberry Pi, Banana Pi or some other compatible device, make sure you
-got root access via SSH and that the device has internet access.
+on a Raspberry Pi, Banana Pi or some other compatible device.
 
-I recommend mounting the iso first with guestfish to enable SSH:
+To make sure you got root access via SSH and that the device has internet
+access, I recommend mounting the iso first with guestfish to enable SSH:
 
 ```
 $ guestfish -a kali-linux-2019.2-rpi3-nexmon-64.img
@@ -63,8 +68,8 @@ Then create a symlink to enable the SSH service at boot:
 ln-s /lib/systemd/system/ssh.service /etc/systemd/system/sshd.service
 ```
 
-Then `umount /`, `sync` and `exit`. Copy it to an SD card, boot the Raspberry
-Pi and proceed as in variant 2.
+Then `umount /`, `sync` and `exit`. Copy it to an SD card, boot the
+Raspberry Pi and proceed as in variant 2.
 
 This is a good moment to get coffee, because this step may take a while.
 
