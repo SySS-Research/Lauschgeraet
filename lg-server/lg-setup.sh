@@ -22,11 +22,6 @@ else
     if [ -z $WIFIIF ] ; then WIFIIF=none ; fi
 fi
 
-if [[ `cat /etc/issue` != Kali* ]] ; then
-    echo "[!] Warning! This setup script is meant for Kali Linux only!"
-    echo "    Things might not work properly and you should do a manual install."
-fi
-
 if [[ $WIFIIF != none ]] ; then
     DCHP=YES
 fi
