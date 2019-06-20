@@ -11,8 +11,9 @@ flowing through your machine.
 Installation
 ============
 
-The recommended distribution is always Kali Linux (even on ARM). A minimal
-network install with just an SSH server and standard Linux tools will do.
+The recommended distribution is either Debian Stretch or newer or Kali Linux
+(even on ARM). A minimal network install with just an SSH server and
+standard Linux tools will do.
 
 Variant 1 (namespaces)
 ----------------------
@@ -28,7 +29,6 @@ Variant 2 (virtual machine)
 * Create a virtual machine with a network interface you can reach from your host machine (host-only if using KVM) and set up an SSH service
 * Boot the device before plugging in any extra network interfaces
 * Log in and make sure you can reach the internet
-* Use `ntpdate` to set the correct time, if necessary.
 * Write down the name of the wireless interface, if there is any
 * Now plug in the switch interface and write down the name of the new device
   that shows up in the output of `ip link`
@@ -43,15 +43,16 @@ Variant 2 (virtual machine)
 Variant 3 (hardware)
 --------------------
 
-Download a suitable [Kali Linux image for
-ARM](https://www.offensive-security.com/kali-linux-arm-images/), install it
-on a Raspberry Pi, Banana Pi or some other compatible device.
+Download a suitable ISO, install it on a Raspberry Pi, Banana Pi or some
+other compatible device. This has been tested with
+`2018-04-18-raspbian-stretch-lite.img` (SHA1 sum
+a85ca45b0830bfa3196786061c524d93325596c0).
 
 To make sure you got root access via SSH and that the device has internet
 access, I recommend mounting the iso first with guestfish to enable SSH:
 
 ```
-$ guestfish -a kali-linux-2019.2-rpi3-nexmon-64.img
+$ guestfish -a 2018-04-18-raspbian-stretch-lite.img
 
 Welcome to guestfish, the guest filesystem shell for
 editing virtual machine filesystems and disk images.
@@ -93,7 +94,7 @@ Quickstart
 * Set the status of the Lauschgerät to `passive` by clicking the On/Off
   switch
 * Watch the traffic with `ip netns exec lg tcpdump -i br0`, or remotely
-  with Wireshark: `ssh root@kali ip netns exec lg tcpdump -s 0 -U -n -w - -i br0 | wireshark -k -i -`
+  with Wireshark: `ssh root@lauschgeraet ip netns exec lg tcpdump -s 0 -U -n -w - -i br0 | wireshark -k -i -`
 * To redirect traffic to another service, set the status of the Lauschgerät
   to `active`
 * Run a service on the target port using the "Services" page
