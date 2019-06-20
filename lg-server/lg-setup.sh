@@ -36,6 +36,7 @@ rootdir=`dirname $0`
 echo "[*] Installing dependencies..."
 
 export DEBIAN_FRONTEND=noninteractive
+apt-get update
 apt-get -yq remove network-manager xfce4
 apt-get -yq autoremove
 apt-get -yq dist-upgrade
@@ -94,7 +95,7 @@ systemctl enable lauschgeraet
 apt-get -yq remove avahi-daemon || true
 systemctl disable systemd-timesyncd.service || true
 
-echo 1 | update-alternatives --config iptables
-echo 1 | update-alternatives --config arptables
+echo 1 | update-alternatives --config iptables || true
+echo 1 | update-alternatives --config arptables || true
 
 echo "[*] Done! Reboot now."
