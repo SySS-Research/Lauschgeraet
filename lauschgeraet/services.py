@@ -106,6 +106,20 @@ class LGService(object):
                         " arguments. Example: '-p %(port) -h %(host)'",
                 "value": d["argstring"],
             },
+            "python_reqs": {
+                "description": "Python requirements",
+                "type": "text",
+                "help": "List of python3 packages which need to be "
+                        "installed via pip3",
+                "value": d["python_reqs"],
+            },
+            "system_reqs": {
+                "description": "System requirements",
+                "type": "text",
+                "help": "List of packages which need to be installed via "
+                        "apt-get",
+                "value": d["system_reqs"],
+            },
             "install_cmd": {
                 "description": "Install Command",
                 "type": "text",
@@ -194,6 +208,24 @@ class LGService(object):
 
     def is_installed(self):
         return shutil.which(self["properties"]["path"]["value"]) is not None
+
+    def install_reqs(self):
+        for r in self["properties"]["system_reqs"]["value"]:
+            cmd = "apt-get install -yq".split() + [r]
+            try:
+                subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
+                log.exception("Exception while running command: %s" %
+                              ' '.join(cmd))
+                log.error(e.output.decode())
+        for r in self["properties"]["python_reqs"]["value"]:
+            cmd = "pip3 install --user".split() + [r]
+            try:
+                subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
+                log.exception("Exception while running command: %s" %
+                              ' '.join(cmd))
+                log.error(e.output.decode())
 
     def install(self):
         cmd = self["properties"]["install_cmd"]["value"].split()

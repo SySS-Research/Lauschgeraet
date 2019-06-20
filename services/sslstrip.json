@@ -3,6 +3,8 @@
     "path": "sslstrip",
     "description": "A tool for exploiting Moxie Marlinspike's SSL \"stripping\" attack",
     "source": "https://github.com/moxie0/sslstrip",
+    "python_reqs": [],
+    "system_reqs": [],
     "install_cmd": "apt-get -yq install sslstrip",
     "update_cmd": "apt-get -yq install sslstrip",
     "argstring": "-l %(port)s",

@@ -3,6 +3,8 @@
     "path": "/opt/tlseraser/example.py",
     "description": "Flip images transferred via HTTP",
     "source": "https://github.com/AdrianVollmer/tlseraser",
+    "python_reqs": [],
+    "system_reqs": ["python3-pillow"],
     "install_cmd": "git clone https://github.com/AdrianVollmer/tlseraser.git /opt/tlseraser",
     "update_cmd": "git -C /opt/tlseraser pull",
     "argstring": "-f flipper -p %(lport)s -l %(lhost)s -n %(netns)s",
