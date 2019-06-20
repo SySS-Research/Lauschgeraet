@@ -138,7 +138,7 @@ def service_output():
 
 
 @app.route('/service', methods=["POST"])
-def serice_action():
+def service_action():
     n = int(request.form["n"])-1
     action = request.form["action"]
     if action == 'install':
@@ -146,7 +146,7 @@ def serice_action():
     elif action == 'update':
         SERVICES[n].update()
     elif action == 'updateargs':
-        pass  # TODO
+        SERVICES[n].update_params(request.form)
     elif action == 'editjson':
         pass  # TODO
     else:

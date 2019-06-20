@@ -64,6 +64,9 @@ class LGServiceParameter(object):
     def __getitem__(self, key):
         return self._props[key]
 
+    def update(self, value):
+        self._props["value"] = value
+
 
 class LGService(object):
     def __init__(self, jsonfile):
@@ -244,6 +247,12 @@ class LGService(object):
             log.exception("Exception while running command: %s" %
                           ' '.join(cmd))
             log.error(e.output.decode())
+
+    def update_params(self, d):
+        """Update arguments based on the values in the dictionary d"""
+        for k, v in d.items():
+            if k in self["parameters"]:
+                self["parameters"][k].update(v)
 
 
 SERVICES = [LGService(s) for s in list_installed_services()]

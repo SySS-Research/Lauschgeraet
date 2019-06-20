@@ -156,13 +156,19 @@ $(".service-form .btn-group .btn").click(function(){
     var n = $(this).closest('.service-form').attr('data-n');
     var action = $(this).attr('data-action');
     // TODO insert spinner
+    var data = {
+        "n": n,
+        "action": action,
+    };
+    if (action == 'updateargs') {
+        $(".service-json-field").each(function(){
+            data[$(this).attr("data-field")] =  $(this).attr("value");
+        });
+    };
     $.ajax({
         url: '/service',
-        data: {
-            "n": n,
-            "action": action,
-        },
         type: 'POST',
+        data: data,
         success: function() { location.reload(); }
     });
 });

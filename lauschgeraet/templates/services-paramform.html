@@ -5,8 +5,9 @@
   </label>
   <div class="col-sm-10">
       <input type="{{p["type"]}}"
-             class="form-control"
+             class="form-control service-json-field"
              id="service-{{outer_loop.index}}-{{name}}"
+             data-field="{{name}}"
              aria-describedby="service-{{outer_loop.index}}-{{name}}-help"
              value="{{p["value"]}}">
       <small id="service-{{outer_loop.index}}-{{name}}-help"
