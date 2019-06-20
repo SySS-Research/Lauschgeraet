@@ -128,9 +128,10 @@ if [ ! $decision = y ] ; then
     exit 0
 fi
 
+NOW="$(date "+%F %T")"
 ssh-copy-id -p "$PORT" "$SSHUSER@$SERVER" || true
 scp -P "$PORT" "$TARBALL" "$SSHUSER@$SERVER:/root"
-ssh -p "$PORT" "$SSHUSER@$SERVER" "mkdir -p /root/lg ; cd /root/lg ; \
+ssh -p "$PORT" "$SSHUSER@$SERVER" "date -s "$NOW"; mkdir -p /root/lg ; cd /root/lg ; \
     tar xf ../lg.tar.gz ; \
     /root/lg/lg-server/lg-setup.sh \
     \"$DHCP\" \"$ATIF\" \"$CLIF\" \"$SWIF\" $WIFIIF $WIFIPASS"
