@@ -1,6 +1,6 @@
 auto %ATIF%
 allow-hotplug %ATIF%
 iface %ATIF% inet static
-address 203.0.113.37
+address 10.47.0.1
 netmask 255.255.255.0
 

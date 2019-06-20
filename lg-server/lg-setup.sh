@@ -60,6 +60,7 @@ if [[ $DHCP = YES ]] ; then
     sed -i "s/^#ATDHCP#//" /etc/dnsmasq.conf
     sed -i "s/%ATIF%/$ATIF/g" /etc/dnsmasq.conf /etc/network/interfaces.d/lauschgeraet.atif
 fi
+echo "source /etc/network/interfaces.d/*" >> /etc/network/interfaces
 
 sed -i "s/%ATIF%/$ATIF/g" $rootdir/bin/lg-config.sh
 sed -i "s/%CLIF%/$CLIF/g" $rootdir/bin/lg-config.sh /lib/systemd/system/lauschgeraet.service
@@ -82,15 +83,17 @@ echo "[*] Configuring services..."
 systemctl enable ssh
 
 if [ $DHCP = YES ] ; then
+    systemctl unmask dnsmasq
     systemctl enable dnsmasq
     systemctl enable networking
+    systemctl disable dhcpcd
 fi
 
 sleep 1
 
 systemctl enable lauschgeraet
-systemctl disable systemd-timesyncd.service || true
 apt-get -yq remove avahi-daemon || true
+systemctl disable systemd-timesyncd.service || true
 
 echo 1 | update-alternatives --config iptables || true
 echo 1 | update-alternatives --config arptables || true

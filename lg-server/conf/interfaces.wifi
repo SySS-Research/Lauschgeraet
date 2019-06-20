@@ -1,6 +1,6 @@
 auto %WIFIIF%
 allow-hotplug %WIFIIF%
 iface %WIFIIF% inet static
-address 198.51.100.1
+address 10.48.0.1
 netmask 255.255.255.0
 
