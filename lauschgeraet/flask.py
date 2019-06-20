@@ -8,6 +8,7 @@ from lauschgeraet.ifaces import get_ip_config, get_ip_route, iptables_raw, \
         delete_iptables_rule
 from lauschgeraet.lgiface import get_lg_status, set_lg_status
 from lauschgeraet.services import SERVICES
+from lauschgeraet.args import args
 import subprocess
 import os
 import logging
@@ -56,8 +57,10 @@ def dashboard():
         "ipconfig": {
             "ipaddr": get_ip_config(),
             "iproute": get_ip_route(),
-            "ss": get_ss()
+            "ss": get_ss(),
         },
+        "clif": args.CL_IFACE,
+        "swif": args.SW_IFACE,
     }
     return render_template("dashboard.html", **context)
 
