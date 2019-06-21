@@ -47,10 +47,10 @@ cp $rootdir/conf/sysctl.conf /etc/sysctl.conf
 cp $rootdir/conf/modules /etc/modules
 cp $rootdir/conf/lauschgeraet.profile /etc/profile.d/
 
+cp $rootdir/conf/dnsmasq.conf /etc/dnsmasq.conf
+cp $rootdir/conf/sshd_config /etc/ssh/sshd_config
 
 if [[ $DHCP = YES ]] ; then
-    cp $rootdir/conf/dnsmasq.conf /etc/dnsmasq.conf
-    cp $rootdir/conf/sshd_config /etc/ssh/sshd_config
     cp $rootdir/conf/interfaces.atif /etc/network/interfaces.d/lauschgeraet.atif
     sed -i "s/^#ATDHCP#//" /etc/dnsmasq.conf
     sed -i "s/%ATIF%/$ATIF/g" /etc/dnsmasq.conf /etc/network/interfaces.d/lauschgeraet.atif
@@ -71,6 +71,8 @@ if [[ $WIFIIF != none ]] ; then
     sed -i "s/^wpa_passphrase=.*\$/wpa_passphrase=$wifipw/" /etc/hostapd/hostapd.conf
     systemctl unmask hostapd
     systemctl enable hostapd
+    systemctl unmask dnsmasq
+    systemctl enable dnsmasq
 fi
 
 echo "[*] Configuring services..."
