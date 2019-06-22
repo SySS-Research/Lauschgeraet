@@ -231,6 +231,7 @@ class LGService(object):
                 log.error(e.output.decode())
 
     def install(self):
+        self.install_reqs()
         cmd = self["properties"]["install_cmd"]["value"].split()
         try:
             subprocess.check_output(cmd, stderr=subprocess.STDOUT)
