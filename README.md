@@ -198,6 +198,14 @@ Large parts of the 802.1x bypass have been taken from [Alva Duckwall's
 excellent
 talk](https://www.defcon.org/images/defcon-19/dc-19-presentations/Duckwall/DEFCON-19-Duckwall-Bridge-Too-Far.pdf).
 
+
+Similar Projects
+================
+
+* Silentbridge: https://github.com/s0lst1c3/silentbridge
+* PhanTap: https://github.com/nccgroup/phantap
+* Dolos Cloak
+
 Author
 ======
 
