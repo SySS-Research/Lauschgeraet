@@ -45,6 +45,7 @@ case $1 in
 	lg-arp.py -m $CLMAC -a $CLIP -i $SWIF $CLNET | while read MAC IP; do
 	    echo "Adding $IP at $MAC"
 	    arp -s -i $BRIF $IP $MAC
+        arp -s $CLIP $CLMAC
 	done
         ;;
     'down')

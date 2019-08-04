@@ -32,7 +32,6 @@ case $1 in
         ip route add $GWIP/32 dev $BRIF
         ip route add default via $GWIP src $ATIP
         arp -s -i "$BRIF" "$GWIP" "$GWMAC"
-        arp -s $CLIP $CLMAC
 
         iptables -t nat -N LG
         iptables -t nat -A PREROUTING -j LG
